@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma Lecom 6.0 - DESKTOP</title>
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ========== TOPBAR VINHO ========== -->
+  <header class="topbar">
+    <!-- Esquerda: Grid + Logo + Busca -->
+    <button class="topbar-grid-btn" title="Menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="4" height="4" rx="0.5"/><rect x="6" y="1" width="4" height="4" rx="0.5"/><rect x="11" y="1" width="4" height="4" rx="0.5"/><rect x="1" y="6" width="4" height="4" rx="0.5"/><rect x="6" y="6" width="4" height="4" rx="0.5"/><rect x="11" y="6" width="4" height="4" rx="0.5"/><rect x="1" y="11" width="4" height="4" rx="0.5"/><rect x="6" y="11" width="4" height="4" rx="0.5"/><rect x="11" y="11" width="4" height="4" rx="0.5"/></svg>
+    </button>
+
+    <a href="#" class="topbar-brand">
+      <div class="topbar-brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </div>
+      <span>DESKTOP</span>
+    </a>
+
+    <div class="topbar-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Pesquise um código ou pesquisas salvas...">
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <!-- Direita: Chat + User + Help + Arrow -->
+    <div class="topbar-right">
+      <button class="topbar-icon" title="Mensagens">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <span class="topbar-user">PEDRO HENRIQUE PEREIRA DOS SANTOS</span>
+      <button class="topbar-icon" title="Ajuda">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+      <button class="topbar-icon" title="Expandir">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========== BODY (SIDEBAR + MAIN) ========== -->
+  <div class="body-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <button class="btn-abrir" onclick="openNewProcessWizard()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Abrir
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="section-atividades" data-tab="TODAS">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Minhas atividades
+        </a>
+        <a href="#" class="nav-item" data-section="section-atividades" data-tab="CAIXA_ENTRADA">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          Caixa de entrada
+        </a>
+        <a href="#" class="nav-item" data-section="section-atividades" data-tab="EM_ALERTA">
+          <div class="dot-icon dot-amber"></div>
+          Em alerta
+        </a>
+        <a href="#" class="nav-item" data-section="section-atividades" data-tab="EM_ATRASO">
+          <div class="dot-icon dot-red"></div>
+          Em atraso
+        </a>
+        <a href="#" class="nav-item" data-section="section-atividades" data-tab="ABERTOS_POR_MIM">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Abertos por mim
+        </a>
+        <a href="#" class="nav-item" data-section="section-atividades" data-tab="GERIDAS_POR_MIM">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Geridas por mim
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span>Plataforma Lecom</span>
+        <span>Versão 6.0 - RTM 1.08.10</span>
+        <span>Uso autorizado para DESKTOP</span>
+        <span class="lecom-link">&gt; Lecom</span>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="workspace">
+
+      <!-- SECTION: MINHAS ATIVIDADES -->
+      <section id="section-atividades" class="page-section">
+        <div class="ws-header">
+          <h1 class="ws-title" id="ws-title-label">Minhas atividades</h1>
+          <div class="ws-header-actions">
+            <button class="ws-icon-btn" onclick="refreshView()" title="Atualizar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+            <button class="ws-icon-btn" onclick="toggleView()" title="Visualização">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            </button>
+            <button class="ws-icon-btn" title="Opções">
+              <svg width="4" height="16" viewBox="0 0 4 16" fill="currentColor"><circle cx="2" cy="2" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="2" cy="14" r="1.5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="ws-filter-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          <input type="text" id="searchInput" placeholder="Filtrar processo ou filtro salvo">
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="empty-view" class="empty-state">
+          <div class="empty-grid-icon">
+            <div class="cell"></div>
+            <div class="cell filled"></div>
+            <div class="cell filled"></div>
+            <div class="cell"></div>
+          </div>
+          <h2 class="empty-title">Você não tem nenhuma atividade no momento.</h2>
+          <p class="empty-desc">
+            Atividades sob sua responsabilidade aparecerão aqui agrupadas por modelo de processo. As listas de um mesmo modelo permitem que você veja os dados do título.
+          </p>
+        </div>
+
+        <!-- POPULATED STATE -->
+        <div id="cards-view" class="cards-grid hidden"></div>
+      </section>
+
+      <!-- SECTION: DASHBOARD -->
+      <section id="section-dashboard" class="page-section hidden">
+        <div class="ws-header">
+          <h1 class="ws-title">Dashboard</h1>
+        </div>
+        <div style="padding:0 20px 20px;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+            <div class="pcard" style="cursor:default;">
+              <div style="font-size:.72rem;color:#8B949E;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Em Andamento</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#fff;" id="d-progress">0</div>
+            </div>
+            <div class="pcard" style="cursor:default;">
+              <div style="font-size:.72rem;color:#8B949E;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Em Alerta</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#E8A838;" id="d-alert">0</div>
+            </div>
+            <div class="pcard" style="cursor:default;">
+              <div style="font-size:.72rem;color:#8B949E;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Em Atraso</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#D94444;" id="d-danger">0</div>
+            </div>
+            <div class="pcard" style="cursor:default;">
+              <div style="font-size:.72rem;color:#8B949E;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Concluídos</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#3FB950;" id="d-done">0</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+            <div class="pcard" style="cursor:default;padding:18px;">
+              <div style="font-size:.85rem;font-weight:600;color:#fff;margin-bottom:14px;">Volume por Modelo de Processo</div>
+              <div style="position:relative;height:220px;"><canvas id="chartVolume"></canvas></div>
+            </div>
+            <div class="pcard" style="cursor:default;padding:18px;">
+              <div style="font-size:.85rem;font-weight:600;color:#fff;margin-bottom:14px;">Status de SLA</div>
+              <div style="position:relative;height:220px;"><canvas id="chartSla"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: MELHORIA & GARGALOS -->
+      <section id="section-improvement" class="page-section hidden">
+        <div class="ws-header">
+          <h1 class="ws-title">Melhoria de Processos</h1>
+          <button class="sim-btn" id="btnSim" onclick="toggleSim()">🚀 Simular Melhoria</button>
+        </div>
+        <p id="simLabel" style="padding:0 20px 14px;font-size:.78rem;color:#E8A838;">Exibindo: Cenário Atual (Diagnóstico de Gargalos)</p>
+        <div class="improve-grid" id="bottleneck-container"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ========== MODAL: EXECUTAR ATIVIDADE ========== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitle">Executar Atividade</h3>
+      <button class="modal-close" id="closeModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div style="font-size:.72rem;text-transform:uppercase;color:#8B949E;font-weight:700;margin-bottom:10px;">Etapas do Processo</div>
+        <div class="stepper" id="modalStepper"></div>
+      </div>
+      <div style="border-top:1px solid #21262D;padding-top:14px;">
+        <div style="margin-bottom:8px;font-size:.78rem;color:#8B949E;">Código: <strong id="modalCode" style="color:#2196F3;"></strong></div>
+        <div style="margin-bottom:8px;font-size:.78rem;color:#8B949E;">Solicitante: <span id="modalRequester"></span></div>
+        <div style="font-size:.78rem;color:#8B949E;margin-bottom:4px;">Justificativa:</div>
+        <div id="modalJustification" style="background:#0D1117;padding:10px;border-radius:4px;font-size:.82rem;color:#E2E8F0;"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-secondary" id="btnReject">Reprovar</button>
+      <button class="btn-primary" id="btnApprove">Aprovar e Avançar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: ABRIR PROCESSO ========== -->
+<div class="modal-overlay" id="modalNew">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Abrir Novo Processo</h3>
+      <button class="modal-close" onclick="closeNew()">&times;</button>
+    </div>
+    <form id="formNew" onsubmit="createProcess(event)">
+      <div class="modal-body">
+        <div class="field">
+          <label>Modelo de Processo</label>
+          <select id="nType" required>
+            <option value="proc_compras">Solicitação de Compras (SLA 48h)</option>
+            <option value="proc_reembolso">Reembolso de Despesas (SLA 24h)</option>
+            <option value="proc_ti">Chamado de TI & Acessos (SLA 12h)</option>
+            <option value="proc_rh">Admissão de Colaborador (SLA 72h)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Título da Solicitação</label>
+          <input type="text" id="nTitle" placeholder="Ex: Compra de Servidor de Backup" required>
+        </div>
+        <div class="field">
+          <label>Nome do Solicitante</label>
+          <input type="text" id="nRequester" value="Pedro Henrique Pereira dos Santos" required>
+        </div>
+        <div class="field">
+          <label>Prioridade</label>
+          <select id="nPriority">
+            <option value="MEDIA">Média</option>
+            <option value="ALTA">Alta</option>
+            <option value="URGENTE">Urgente</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Justificativa</label>
+          <textarea id="nJustification" placeholder="Descreva os motivos da abertura..." required></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-secondary" onclick="closeNew()">Cancelar</button>
+        <button type="submit" class="btn-primary">Iniciar Processo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
