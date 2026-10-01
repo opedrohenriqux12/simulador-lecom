@@ -21,13 +21,87 @@ const store = new Store();
 let chartV = null, chartS = null;
 let showEmpty = true;
 let currentTab = 'TODAS';
+let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  initLoginScreen();
   initNav();
   renderActivities();
   initModal();
   initSearch();
+  
+  // Close dropdown on click outside
+  document.addEventListener('click', (e) => {
+    const menuContainer = document.getElementById('user-menu-container');
+    const dropdown = document.getElementById('user-dropdown');
+    if (menuContainer && dropdown && !menuContainer.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
 });
+
+// === Login & Auth ===
+function initLoginScreen() {
+  const select = document.getElementById('login-user-select');
+  if (select) {
+    USERS.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.textContent = `${u.name} - ${u.role}`;
+      select.appendChild(opt);
+    });
+  }
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const userId = document.getElementById('login-user-select').value;
+  if (!userId) return;
+  
+  currentUser = USERS.find(u => u.id === userId);
+  
+  // Update Topbar
+  document.getElementById('topbar-avatar').textContent = currentUser.initials;
+  document.getElementById('topbar-name').textContent = currentUser.name.split(' ')[0] + ' ' + (currentUser.name.split(' ')[1] || '');
+  
+  // Update Dropdown
+  document.getElementById('dropdown-name').textContent = currentUser.name;
+  document.getElementById('dropdown-role').textContent = currentUser.role;
+  
+  // Update Profile section
+  document.getElementById('profile-name').textContent = currentUser.name;
+  document.getElementById('profile-email').textContent = currentUser.email;
+  document.getElementById('profile-role').textContent = currentUser.role;
+  document.getElementById('profile-dept').textContent = currentUser.department;
+  
+  // Update new process form default
+  document.getElementById('nRequester').value = currentUser.name;
+  
+  // Show Main App, Hide Login
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  
+  // Go to default view
+  document.querySelector('.nav-item[data-section="section-atividades"]').click();
+}
+
+function handleLogout() {
+  currentUser = null;
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-form').reset();
+  document.getElementById('user-dropdown').classList.add('hidden');
+}
+
+function toggleUserMenu() {
+  document.getElementById('user-dropdown').classList.toggle('hidden');
+}
+
+function openProfile() {
+  document.getElementById('user-dropdown').classList.add('hidden');
+  document.querySelector('.nav-item[data-section="section-perfil"]').click();
+}
+
 
 // === Navigation ===
 function initNav() {
@@ -256,7 +330,7 @@ function createProcess(e) {
     id, processId: document.getElementById('nType').value,
     title: document.getElementById('nTitle').value,
     requester: document.getElementById('nRequester').value,
-    department: 'Engenharia de Processos',
+    department: currentUser ? currentUser.department : 'Engenharia de Processos',
     currentStepIndex: 1, status: 'EM_ANDAMENTO', slaStatus: 'SUCCESS',
     slaDueDate: '2026-08-08T18:00:00', createdAt: new Date().toISOString(),
     priority: document.getElementById('nPriority').value,

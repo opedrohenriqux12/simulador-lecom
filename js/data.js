@@ -2,6 +2,12 @@
    Simulador Lecom BPMS - Data Store & Default Mock Data
    ========================================================================== */
 
+const USERS = [
+  { id: 'u1', name: 'Pedro Henrique Pereira dos Santos', email: 'pedro.santos@desktop.com.br', role: 'Analista de Processos', department: 'Engenharia de Processos', initials: 'PH' },
+  { id: 'u2', name: 'Ana Clara Silva', email: 'ana.silva@desktop.com.br', role: 'Gerente de TI', department: 'Tecnologia', initials: 'AS' },
+  { id: 'u3', name: 'Carlos Eduardo Santos', email: 'carlos.santos@desktop.com.br', role: 'Diretor Comercial', department: 'Comercial', initials: 'CE' }
+];
+
 const INITIAL_PROCESS_TEMPLATES = [
   {
     id: 'proc_compras',
