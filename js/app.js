@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setCurrentUser(USERS[0]);
   initNav();
   renderActivities();
+  renderProcessTableBody();
   initModal();
   initSearch();
   
@@ -137,33 +138,43 @@ function toggleView() {
 function refreshView() { renderActivities(); }
 
 // === Activities ===
+function openProcessDetailView(procTitle) {
+  const dash = document.getElementById('atividades-dashboard-view');
+  const tblView = document.getElementById('process-table-view');
+  const titleEl = document.getElementById('processDetailTitle');
+  if (titleEl) titleEl.textContent = procTitle || 'Solicitação de Parecer Jurídico';
+  if (dash) dash.classList.add('hidden');
+  if (tblView) tblView.classList.remove('hidden');
+}
+
+function closeProcessDetailView() {
+  const dash = document.getElementById('atividades-dashboard-view');
+  const tblView = document.getElementById('process-table-view');
+  if (dash) dash.classList.remove('hidden');
+  if (tblView) tblView.classList.add('hidden');
+}
+
 function renderActivities() {
-  const emptyEl = document.getElementById('empty-view');
-  const cardsEl = document.getElementById('cards-view');
   const tasks = store.get();
+  const total = tasks.length;
+  const noprazo = tasks.filter(t => t.slaStatus === 'SUCCESS' || t.status === 'EM_ANDAMENTO').length;
+  const alerta = tasks.filter(t => t.slaStatus === 'WARNING').length;
+  const atrasado = tasks.filter(t => t.slaStatus === 'DANGER').length;
 
-  let filtered = tasks;
-  if (currentTab === 'EM_ALERTA') filtered = tasks.filter(t => t.slaStatus === 'WARNING');
-  else if (currentTab === 'EM_ATRASO') filtered = tasks.filter(t => t.slaStatus === 'DANGER');
+  const elTotal = document.getElementById('atv-val-total');
+  const elNoprazo = document.getElementById('atv-val-noprazo');
+  const elAlerta = document.getElementById('atv-val-alerta');
+  const elAtrasado = document.getElementById('atv-val-atrasado');
 
-  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase();
-  if (searchVal) {
-    filtered = filtered.filter(t =>
-      t.title.toLowerCase().includes(searchVal) ||
-      t.id.toLowerCase().includes(searchVal) ||
-      t.requester.toLowerCase().includes(searchVal)
-    );
-    showEmpty = false;
-  }
+  if (elTotal) elTotal.textContent = total;
+  if (elNoprazo) elNoprazo.textContent = noprazo;
+  if (elAlerta) elAlerta.textContent = alerta;
+  if (elAtrasado) elAtrasado.textContent = atrasado;
 
-  if (showEmpty || filtered.length === 0) {
-    emptyEl.classList.remove('hidden');
-    cardsEl.classList.add('hidden');
-  } else {
-    emptyEl.classList.add('hidden');
-    cardsEl.classList.remove('hidden');
-    renderCards(filtered);
-  }
+  const bCount = document.getElementById('proc-badge-count');
+  const bStatus = document.getElementById('proc-badge-status');
+  if (bCount) bCount.textContent = `${total} ${total === 1 ? 'atividade' : 'atividades'}`;
+  if (bStatus) bStatus.textContent = `${noprazo} no prazo`;
 }
 
 function renderCards(tasks) {
@@ -551,6 +562,127 @@ function toggleFormFields() {
   }
 }
 
+let selectedProcessIds = new Set();
+
+function toggleSelectionMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('selectionDropdownMenu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+function clearTableSelection() {
+  selectedProcessIds.clear();
+  const selectAllCb = document.getElementById('selectAllCheckbox');
+  if (selectAllCb) selectAllCb.checked = false;
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+  updateSelectionUI();
+}
+
+function toggleSelectAllRows(masterCb) {
+  const isChecked = masterCb.checked;
+  const tasks = store.get();
+  selectedProcessIds.clear();
+  if (isChecked) {
+    tasks.forEach(t => selectedProcessIds.add(t.id));
+  }
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked);
+  updateSelectionUI();
+}
+
+function toggleRowSelection(taskId, cb, event) {
+  if (event) event.stopPropagation();
+  if (cb.checked) {
+    selectedProcessIds.add(taskId);
+  } else {
+    selectedProcessIds.delete(taskId);
+  }
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  const count = selectedProcessIds.size;
+  const normalHeader = document.getElementById('normalHeader');
+  const selectionHeader = document.getElementById('selectionHeader');
+  const titleEl = document.getElementById('selectionCountTitle');
+  const subEl = document.getElementById('selectionCountSub');
+
+  if (count > 0) {
+    if (normalHeader) normalHeader.classList.add('hidden');
+    if (selectionHeader) selectionHeader.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = `${count} atividade(s) selecionada(s)`;
+    if (subEl) subEl.textContent = `de ${store.get().length} atividade(s)`;
+  } else {
+    if (normalHeader) normalHeader.classList.remove('hidden');
+    if (selectionHeader) selectionHeader.classList.add('hidden');
+  }
+}
+
+function cancelarProcessosSelecionados() {
+  const count = selectedProcessIds.size;
+  if (count === 0) return;
+
+  const confirmed = confirm(`Deseja realmente cancelar/rejeitar as ${count} atividade(s) selecionada(s)?`);
+  if (!confirmed) return;
+
+  let tasks = store.get();
+  tasks = tasks.filter(t => !selectedProcessIds.has(t.id));
+  store.save(tasks);
+
+  clearTableSelection();
+  renderActivities();
+  renderProcessTableBody();
+  alert('Processo(s) cancelado(s) e removido(s) com sucesso.');
+}
+
+function handleMenuAction(action) {
+  const menu = document.getElementById('selectionDropdownMenu');
+  if (menu) menu.classList.add('hidden');
+  if (action === 'acesso') alert('Acesso múltiplo ativado para os itens selecionados.');
+  if (action === 'aprovar') alert('Todas as atividades selecionadas foram aprovadas.');
+  if (action === 'filtro') alert('Novo filtro criado a partir da seleção.');
+}
+
+function renderProcessTableBody() {
+  const tbody = document.getElementById('processTableBody');
+  if (!tbody) return;
+  const tasks = store.get();
+  tbody.innerHTML = '';
+  
+  if (tasks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="14" style="text-align:center;color:#718096;padding:16px;">Nenhum dado adicionado</td></tr>`;
+    updateSelectionUI();
+    return;
+  }
+
+  tasks.forEach(task => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => openParecerJuridicoForm(task.title);
+    const nowStr = '01/10/2026 15:05';
+    const deadlineStr = '05/10/2026 15:05';
+    const requester = currentUser ? currentUser.name.toUpperCase() : 'PEDRO HENRIQUE PEREIRA DOS SANTOS';
+    const isChecked = selectedProcessIds.has(task.id);
+
+    tr.innerHTML = `
+      <td><input type="checkbox" class="row-checkbox" ${isChecked ? 'checked' : ''} onclick="toggleRowSelection('${task.id}', this, event)"></td>
+      <td class="code-link">848.165</td>
+      <td class="activity-link">Preencher solicitação</td>
+      <td>${requester}</td>
+      <td>${nowStr}</td>
+      <td>${nowStr}</td>
+      <td>${deadlineStr}</td>
+      <td><span class="badge-em-andamento">Em andamento</span></td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateSelectionUI();
+}
+
 function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídico') {
   const code = Math.floor(100000 + Math.random() * 900000);
   const now = new Date();
@@ -569,11 +701,30 @@ function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídi
     if (elEmail) elEmail.textContent = currentUser.email;
   }
 
+  // Garantir que a atividade apareça na tela inicial como rascunho/aberta se o store estiver vazio
+  const tasks = store.get();
+  if (tasks.length === 0) {
+    store.add({
+      id: 'SOL-2026-8481',
+      processId: 'proc_juridico',
+      title: processName,
+      requester: currentUser ? currentUser.name : 'PEDRO HENRIQUE PEREIRA DOS SANTOS',
+      department: 'Engenharia de Processos',
+      currentStepIndex: 0,
+      status: 'EM_ANDAMENTO',
+      slaStatus: 'SUCCESS',
+      slaDueDate: '2026-10-05T16:00:00',
+      createdAt: new Date().toISOString()
+    });
+  }
+
   anexosList = [];
   servicosList = [];
   renderAnexosTable();
   renderServicosTable();
   toggleFormFields();
+  renderActivities();
+  renderProcessTableBody();
 
   formModal.classList.remove('hidden');
 }
@@ -581,6 +732,8 @@ function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídi
 function closeProcessForm() {
   const formModal = document.getElementById('modalProcessForm');
   if (formModal) formModal.classList.add('hidden');
+  renderActivities();
+  renderProcessTableBody();
 }
 
 function handleFileSelect(e) {
@@ -798,6 +951,7 @@ async function formatAndLookupCNPJ(e) {
           badge.textContent = '✓ CNPJ Válido & Encontrado!';
           badge.style.color = '#3FB950';
         }
+        generateContractDescriptionFromCNPJ(val, data);
         return;
       }
     }
@@ -820,6 +974,27 @@ async function formatAndLookupCNPJ(e) {
     badge.textContent = '✓ CNPJ Válido & Encontrado!';
     badge.style.color = '#3FB950';
   }
+  generateContractDescriptionFromCNPJ(val, null);
+}
+
+function generateContractDescriptionFromCNPJ(cnpj, apiData) {
+  const descInput = document.getElementById('contratoObjeto');
+  if (!descInput) return;
+
+  if (apiData && apiData.cnae_fiscal_descricao) {
+    descInput.value = `Prestação de serviços de ${apiData.cnae_fiscal_descricao.toLowerCase()}.`;
+    return;
+  }
+
+  const MOCK_DESC = {
+    '33000167000101': 'Prestação de serviços de telecomunicações de voz, dados e conectividade.',
+    '00000000000191': 'Prestação de serviços bancários e soluções financeiras corporativas.',
+    '60701190000104': 'Prestação de serviços financeiros e intermediação de negócios.',
+    '02558157000162': 'Prestação de serviços de telecomunicações e infraestrutura de rede.',
+    '04206050000180': 'Prestação de serviços de telecomunicações móveis e conectividade IP.'
+  };
+
+  descInput.value = MOCK_DESC[cnpj] || 'Prestação de serviços e fornecimento de soluções corporativas.';
 }
 
 function generateAIAutoFill() {
