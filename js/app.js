@@ -24,7 +24,7 @@ let currentTab = 'TODAS';
 let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  initLoginScreen();
+  setCurrentUser(USERS[0]);
   initNav();
   renderActivities();
   initModal();
@@ -40,57 +40,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// === Login & Auth ===
-function initLoginScreen() {
-  const select = document.getElementById('login-user-select');
-  if (select) {
-    USERS.forEach(u => {
-      const opt = document.createElement('option');
-      opt.value = u.id;
-      opt.textContent = `${u.name} - ${u.role}`;
-      select.appendChild(opt);
-    });
-  }
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-  const userId = document.getElementById('login-user-select').value;
-  if (!userId) return;
-  
-  currentUser = USERS.find(u => u.id === userId);
+// === Auth & User State ===
+function setCurrentUser(user) {
+  currentUser = user;
+  if (!currentUser) return;
   
   // Update Topbar
-  document.getElementById('topbar-avatar').textContent = currentUser.initials;
-  document.getElementById('topbar-name').textContent = currentUser.name.split(' ')[0] + ' ' + (currentUser.name.split(' ')[1] || '');
+  const nameEl = document.getElementById('topbar-name');
+  if (nameEl) nameEl.textContent = currentUser.name.toUpperCase();
   
   // Update Dropdown
-  document.getElementById('dropdown-name').textContent = currentUser.name;
-  document.getElementById('dropdown-role').textContent = currentUser.role;
+  const dropName = document.getElementById('dropdown-name');
+  const dropEmail = document.getElementById('dropdown-email');
+  if (dropName) dropName.textContent = currentUser.name.toUpperCase();
+  if (dropEmail) dropEmail.textContent = currentUser.email;
   
   // Update Profile section
-  document.getElementById('profile-name').textContent = currentUser.name;
-  document.getElementById('profile-email').textContent = currentUser.email;
-  document.getElementById('profile-role').textContent = currentUser.role;
-  document.getElementById('profile-dept').textContent = currentUser.department;
+  const pName = document.getElementById('profile-name');
+  const pEmail = document.getElementById('profile-email');
+  const pRole = document.getElementById('profile-role');
+  const pDept = document.getElementById('profile-dept');
+  if (pName) pName.textContent = currentUser.name;
+  if (pEmail) pEmail.textContent = currentUser.email;
+  if (pRole) pRole.textContent = currentUser.role;
+  if (pDept) pDept.textContent = currentUser.department;
   
   // Update new process form default
-  document.getElementById('nRequester').value = currentUser.name;
-  
-  // Show Main App, Hide Login
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('main-app').classList.remove('hidden');
-  
-  // Go to default view
-  document.querySelector('.nav-item[data-section="section-atividades"]').click();
+  const reqInput = document.getElementById('nRequester');
+  if (reqInput) reqInput.value = currentUser.name;
 }
 
 function handleLogout() {
-  currentUser = null;
-  document.getElementById('main-app').classList.add('hidden');
-  document.getElementById('login-screen').classList.remove('hidden');
-  document.getElementById('login-form').reset();
   document.getElementById('user-dropdown').classList.add('hidden');
+  openProfile();
 }
 
 function toggleUserMenu() {
@@ -320,7 +302,7 @@ function initModal() {
 }
 
 // === New Process ===
-function openNewProcessWizard() { document.getElementById('modalNew').classList.add('active'); }
+function openNewProcessWizard() { openParecerJuridicoForm('Solicitação de Parecer Jurídico'); }
 function closeNew() { document.getElementById('modalNew').classList.remove('active'); }
 
 function createProcess(e) {
@@ -381,17 +363,50 @@ function toggleSim() {
   renderImprovement();
 }
 
-// === Catalog Modal (Lecom Desktop Replica) ===
+// === Catalog Drawer (Lecom Desktop Replica) ===
 let activeCatalogTab = 'todos';
 let selectedCatalogItem = null;
 
+// Favorite items persistence
+const FAVORITES_STORAGE_KEY = 'lecom_favorites';
+let favoritesList = new Set(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'));
+
+function saveFavorites() {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favoritesList)));
+}
+
+function toggleFavorite(code, event) {
+  if (event) event.stopPropagation();
+  if (favoritesList.has(code)) {
+    favoritesList.delete(code);
+  } else {
+    favoritesList.add(code);
+  }
+  saveFavorites();
+  renderCatalogItems();
+}
+
 function openCatalog() {
   renderCatalogItems();
-  document.getElementById('modalCatalog').classList.add('active');
+  const catModal = document.getElementById('modalCatalog');
+  if (catModal) {
+    catModal.classList.add('active');
+    catModal.style.display = 'block';
+  }
 }
 
 function closeCatalog() {
-  document.getElementById('modalCatalog').classList.remove('active');
+  const catModal = document.getElementById('modalCatalog');
+  if (catModal) {
+    catModal.classList.remove('active');
+    catModal.style.display = 'none';
+  }
+}
+
+function handleDrawerOverlayClick(e) {
+  if (e.target.id === 'modalCatalog') {
+    closeCatalog();
+  }
 }
 
 function switchCatalogTab(tab) {
@@ -415,9 +430,15 @@ function renderCatalogItems() {
 
   LECOM_CATALOG.forEach(catGroup => {
     const matchingItems = catGroup.items.filter(item => {
-      const matchText = (item.name + ' ' + item.version + ' ' + item.processCode + ' ' + catGroup.category).toLowerCase();
-      if (activeCatalogTab === 'favoritos') return false; // Sem favoritos marcados por padrão
-      if (activeCatalogTab === 'aplicacoes') return item.version !== '';
+      const isFav = favoritesList.has(item.processCode);
+      const matchText = (item.name + ' ' + (item.version || '') + ' ' + item.processCode + ' ' + catGroup.category).toLowerCase();
+      
+      if (activeCatalogTab === 'favoritos') {
+        return isFav && matchText.includes(query);
+      }
+      if (activeCatalogTab === 'aplicacoes') {
+        return item.version !== '' && matchText.includes(query);
+      }
       return matchText.includes(query);
     });
 
@@ -432,25 +453,33 @@ function renderCatalogItems() {
         itemEl.className = 'catalog-item';
         if (selectedCatalogItem === item.name) itemEl.classList.add('active');
 
+        const isFav = favoritesList.has(item.processCode);
+
         itemEl.onclick = () => {
           selectedCatalogItem = item.name;
           renderCatalogItems();
-          // Simula início do processo selecionado
           setTimeout(() => {
             closeCatalog();
-            openNewProcessWizard();
-            const nTitle = document.getElementById('nTitle');
-            if (nTitle) nTitle.value = `${item.name}`;
-          }, 200);
+            openParecerJuridicoForm(item.name);
+          }, 150);
         };
 
         itemEl.innerHTML = `
-          <div class="catalog-item-icon"></div>
-          <div class="catalog-item-info">
-            <div class="catalog-item-name">${item.name}</div>
-            ${item.version ? `<div class="catalog-item-sub">${item.version}</div>` : ''}
-            <div class="catalog-item-code">${item.processCode}</div>
+          <div class="catalog-item-left">
+            <svg class="catalog-item-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+            <div class="catalog-item-info">
+              <div class="catalog-item-name">${item.name}</div>
+              ${item.version ? `<div class="catalog-item-sub">${item.version}</div>` : ''}
+              <div class="catalog-item-code">${item.processCode}</div>
+            </div>
           </div>
+          <button class="catalog-fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${item.processCode}', event)" title="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">
+            <svg viewBox="0 0 24 24" fill="${isFav ? '#00c8e6' : 'none'}" stroke="${isFav ? '#00c8e6' : '#5A6578'}" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </button>
         `;
         container.appendChild(itemEl);
       });
@@ -458,7 +487,498 @@ function renderCatalogItems() {
   });
 
   if (container.children.length === 0) {
-    container.innerHTML = `<div style="padding: 20px; font-size: 0.78rem; color: #57606A; text-align: center;">Nenhum processo encontrado.</div>`;
+    container.innerHTML = `<div style="padding: 30px 20px; font-size: 0.8rem; color: #718096; text-align: center;">Nenhum processo encontrado.</div>`;
   }
 }
+
+// === Form Real: Preencher Solicitação (Parecer Jurídico) ===
+let anexosList = [];
+let servicosList = [];
+
+function toggleSubContratoFields() {
+  const selected = document.getElementById('contratoTipoSelect')?.value;
+  const fNegociado = document.getElementById('fieldsNegociadoCompras');
+  const fSemNegociacao = document.getElementById('fieldsSemNegociacaoCompras');
+
+  if (selected === 'Contrato/Aditivo negociado com Compras') {
+    if (fNegociado) fNegociado.style.display = 'block';
+    if (fSemNegociacao) fSemNegociacao.style.display = 'none';
+  } else if (selected === 'Contrato/Aditivo sem negociação com Compras') {
+    if (fNegociado) fNegociado.style.display = 'none';
+    if (fSemNegociacao) fSemNegociacao.style.display = 'block';
+  } else {
+    if (fNegociado) fNegociado.style.display = 'none';
+    if (fSemNegociacao) fSemNegociacao.style.display = 'none';
+  }
+}
+
+function toggleFormFields() {
+  const selected = document.querySelector('input[name="tipoSolicitacao"]:checked')?.value;
+  const containerContratos = document.getElementById('analiseContratosFields');
+  const containerConsultoria = document.getElementById('consultoriaJuridicaFields');
+  const containerRegulamentos = document.getElementById('regulamentosInternosFields');
+  
+  const banner1 = document.getElementById('bannerAnexarContrato');
+  const banner2 = document.getElementById('bannerControleContrato');
+  const secServicos = document.getElementById('secControleServicos');
+
+  if (selected === 'contratos' || selected === 'analise_contratos') {
+    if (containerContratos) containerContratos.style.display = 'block';
+    if (containerConsultoria) containerConsultoria.style.display = 'none';
+    if (containerRegulamentos) containerRegulamentos.style.display = 'none';
+
+    if (banner1) banner1.style.display = 'block';
+    if (banner2) banner2.style.display = 'block';
+    if (secServicos) secServicos.style.display = 'block';
+
+    toggleSubContratoFields();
+  } else if (selected === 'consultoria') {
+    if (containerContratos) containerContratos.style.display = 'none';
+    if (containerConsultoria) containerConsultoria.style.display = 'block';
+    if (containerRegulamentos) containerRegulamentos.style.display = 'none';
+
+    if (banner1) banner1.style.display = 'none';
+    if (banner2) banner2.style.display = 'none';
+    if (secServicos) secServicos.style.display = 'none';
+  } else if (selected === 'regulamentos') {
+    if (containerContratos) containerContratos.style.display = 'none';
+    if (containerConsultoria) containerConsultoria.style.display = 'none';
+    if (containerRegulamentos) containerRegulamentos.style.display = 'block';
+
+    if (banner1) banner1.style.display = 'none';
+    if (banner2) banner2.style.display = 'none';
+    if (secServicos) secServicos.style.display = 'none';
+  }
+}
+
+function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídico') {
+  const code = Math.floor(100000 + Math.random() * 900000);
+  const now = new Date();
+  const nowStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  
+  const formModal = document.getElementById('modalProcessForm');
+  if (!formModal) return;
+
+  document.getElementById('formCodeBadge').textContent = `${code.toString().slice(0,3)}.${code.toString().slice(3)}`;
+  document.getElementById('formSubInfo').textContent = `${processName} - aberto em ${nowStr} por ${currentUser ? currentUser.name.toUpperCase() : 'PEDRO HENRIQUE PEREIRA DOS SANTOS'}`;
+  
+  if (currentUser) {
+    const elName = document.getElementById('solicitudeNome');
+    const elEmail = document.getElementById('solicitudeEmail');
+    if (elName) elName.value = currentUser.name.toUpperCase();
+    if (elEmail) elEmail.textContent = currentUser.email;
+  }
+
+  anexosList = [];
+  servicosList = [];
+  renderAnexosTable();
+  renderServicosTable();
+  toggleFormFields();
+
+  formModal.classList.remove('hidden');
+}
+
+function closeProcessForm() {
+  const formModal = document.getElementById('modalProcessForm');
+  if (formModal) formModal.classList.add('hidden');
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) {
+    document.getElementById('anexoFile').value = file.name;
+  }
+}
+
+function addAnexoRow() {
+  const desc = document.getElementById('anexoDesc').value.trim();
+  const file = document.getElementById('anexoFile').value.trim();
+
+  if (!desc) {
+    alert('Por favor, informe a descrição do anexo.');
+    return;
+  }
+
+  anexosList.push({ desc, file: file || 'documento.pdf' });
+  document.getElementById('anexoDesc').value = '';
+  document.getElementById('anexoFile').value = '';
+  document.getElementById('hiddenFileInput').value = '';
+  renderAnexosTable();
+}
+
+function removeAnexoRow(index) {
+  anexosList.splice(index, 1);
+  renderAnexosTable();
+}
+
+function renderAnexosTable() {
+  const tbody = document.getElementById('tableAnexosBody');
+  const countEl = document.getElementById('tablePageCount');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  if (anexosList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" class="table-empty-row">Nenhum dado adicionado</td></tr>`;
+    if (countEl) countEl.textContent = '1 - 0 de 0';
+    return;
+  }
+
+  anexosList.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.desc}</td>
+      <td>📎 ${item.file}</td>
+      <td style="text-align: right;"><button type="button" style="background:none;border:none;color:#E53935;cursor:pointer;font-weight:700;" onclick="removeAnexoRow(${i})">✖</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (countEl) countEl.textContent = `1 - ${anexosList.length} de ${anexosList.length}`;
+}
+
+function addServicoRow() {
+  const codigo = document.getElementById('servCodigo')?.value.trim();
+  const uso = document.getElementById('servUso')?.value;
+  const servico = document.getElementById('servNome')?.value.trim();
+  const local = document.getElementById('servLocal')?.value.trim();
+
+  if (!codigo || !servico) {
+    alert('Por favor, informe o Código do serviço e o Serviço.');
+    return;
+  }
+
+  servicosList.push({ codigo, uso: uso || 'Operacional', servico, objetivo: 'Contratual', escopo: 'Geral', local: local || 'Matriz' });
+  if (document.getElementById('servCodigo')) document.getElementById('servCodigo').value = '';
+  if (document.getElementById('servNome')) document.getElementById('servNome').value = '';
+  if (document.getElementById('servLocal')) document.getElementById('servLocal').value = '';
+  renderServicosTable();
+}
+
+function removeServicoRow(index) {
+  servicosList.splice(index, 1);
+  renderServicosTable();
+}
+
+function renderServicosTable() {
+  const tbody = document.getElementById('tableServicosBody');
+  const countEl = document.getElementById('tableServCount');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  if (servicosList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="table-empty-row">Nenhum dado adicionado</td></tr>`;
+    if (countEl) countEl.textContent = '1 - 0 de 0';
+    return;
+  }
+
+  servicosList.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.codigo}</td>
+      <td>${item.uso}</td>
+      <td>${item.servico}</td>
+      <td>${item.objetivo}</td>
+      <td>${item.escopo}</td>
+      <td>${item.local}</td>
+      <td style="text-align: right;"><button type="button" style="background:none;border:none;color:#E53935;cursor:pointer;font-weight:700;" onclick="removeServicoRow(${i})">✖</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (countEl) countEl.textContent = `1 - ${servicosList.length} de ${servicosList.length}`;
+}
+
+function submitParecerJuridico() {
+  const code = document.getElementById('formCodeBadge').textContent;
+  const id = `SOL-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  
+  store.add({
+    id,
+    processId: 'proc_juridico',
+    title: 'Solicitação de Parecer Jurídico',
+    requester: currentUser ? currentUser.name : 'PEDRO HENRIQUE PEREIRA DOS SANTOS',
+    department: 'NOC',
+    currentStepIndex: 1,
+    status: 'EM_ANDAMENTO',
+    slaStatus: 'SUCCESS',
+    slaDueDate: '2026-10-05T16:00:00',
+    createdAt: new Date().toISOString(),
+    priority: 'ALTA',
+    details: { justificativa: 'Solicitação de Parecer Jurídico enviada com sucesso.' }
+  });
+
+  alert(`Solicitação ${code} enviada com sucesso!`);
+  closeProcessForm();
+  showEmpty = false;
+  renderActivities();
+}
+
+// Funções de validação matemática oficial de CNPJ (14 dígitos e dígitos verificadores)
+function isValidCNPJ(cnpj) {
+  cnpj = cnpj.replace(/[^\d]+/g, '');
+  if (cnpj.length !== 14) return false;
+  
+  // Elimina CNPJs invalidos conhecidos (sequências idênticas)
+  if (/^(\d)\1+$/.test(cnpj)) return false;
+  
+  // Valida DVs
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0, tamanho);
+  let digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(0)) return false;
+  
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(1)) return false;
+  
+  return true;
+}
+
+// === CNPJ Lookup & AI Assistant Helper ===
+async function formatAndLookupCNPJ(e) {
+  let val = e.target.value.replace(/\D/g, '');
+  if (val.length > 14) val = val.slice(0, 14);
+
+  let formatted = val;
+  if (val.length > 2) formatted = val.slice(0, 2) + '.' + val.slice(2);
+  if (val.length > 5) formatted = formatted.slice(0, 6) + '.' + formatted.slice(6);
+  if (val.length > 8) formatted = formatted.slice(0, 10) + '/' + formatted.slice(10);
+  if (val.length > 12) formatted = formatted.slice(0, 15) + '-' + formatted.slice(15);
+  e.target.value = formatted;
+
+  const badge = document.getElementById('cnpjStatusBadge');
+  const razaoInput = document.getElementById('contratadaName');
+
+  // Limpa razão social enquanto CNPJ não estiver completo
+  if (val.length < 14) {
+    if (razaoInput) razaoInput.value = '';
+    if (badge) badge.textContent = '';
+    return;
+  }
+
+  // Validação estrita do CNPJ
+  if (!isValidCNPJ(val)) {
+    if (razaoInput) razaoInput.value = '';
+    if (badge) {
+      badge.textContent = '❌ CNPJ Inválido';
+      badge.style.color = '#D94444';
+    }
+    return;
+  }
+
+  if (badge) {
+    badge.textContent = '🔍 Consultando CNPJ na Receita...';
+    badge.style.color = '#00c8e6';
+  }
+
+  try {
+    const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${val}`);
+    if (res.ok) {
+      const data = await res.json();
+      const razao = data.razao_social || data.nome_fantasia;
+      if (razao) {
+        if (razaoInput) razaoInput.value = razao.toUpperCase();
+        if (badge) {
+          badge.textContent = '✓ CNPJ Válido & Encontrado!';
+          badge.style.color = '#3FB950';
+        }
+        return;
+      }
+    }
+  } catch (err) {
+    // Fallback caso a API falhe mas o CNPJ seja matematicamente válido
+  }
+
+  const MOCK_CNPJ = {
+    '33000167000101': 'TELEFÔNICA BRASIL S.A.',
+    '00000000000191': 'BANCO DO BRASIL S.A.',
+    '60701190000104': 'ITAÚ UNIBANCO S.A.',
+    '02558157000162': 'TELEMAR NORTE LESTE S.A.',
+    '04206050000180': 'TIM S.A.',
+    '12345678000195': 'TECH SOLUTIONS BRASIL LTDA.'
+  };
+
+  const foundMock = MOCK_CNPJ[val] || 'EMPRESA PRESTADORA DE SERVIÇOS LTDA.';
+  if (razaoInput) razaoInput.value = foundMock;
+  if (badge) {
+    badge.textContent = '✓ CNPJ Válido & Encontrado!';
+    badge.style.color = '#3FB950';
+  }
+}
+
+function generateAIAutoFill() {
+  const cnpjEl = document.getElementById('contratadaCnpj');
+  if (cnpjEl) cnpjEl.value = '33.000.167/0001-01';
+
+  const cAnte = document.getElementById('contratanteName');
+  if (cAnte) cAnte.value = 'DESKTOP S.A. - SIGMANET';
+
+  const cAda = document.getElementById('contratadaName');
+  if (cAda) cAda.value = 'TELEFÔNICA BRASIL S.A.';
+
+  const cTipo = document.getElementById('contratoTipoSelect');
+  if (cTipo) {
+    cTipo.value = 'Contrato B2B';
+    toggleSubContratoFields();
+  }
+
+  // Pre-fill sub-fields if opened
+  const numCh = document.getElementById('numChamadoCompras');
+  if (numCh) numCh.value = 'CHM-2026-9921';
+  const solCh = document.getElementById('solicitanteCompras');
+  if (solCh) solCh.value = 'PEDRO HENRIQUE PEREIRA DOS SANTOS';
+
+  const motSem = document.getElementById('motivoSemCompras');
+  if (motSem) motSem.value = 'Contratação emergencial sem intermédio do departamento de Compras.';
+  const codCc = document.getElementById('codCentroCusto');
+  if (codCc) codCc.value = 'CC-10900001';
+  const nomeCc = document.getElementById('nomeCentroCusto');
+  if (nomeCc) nomeCc.value = 'Engenharia & NOC';
+  const sup = document.getElementById('superintendenteName');
+  if (sup) sup.value = 'CARLOS EDUARDO SANTOS';
+  const dir = document.getElementById('diretorName');
+  if (dir) dir.value = 'ANA CLARA SILVA';
+
+  const cObj = document.getElementById('contratoObjeto');
+  if (cObj) cObj.value = 'Prestação de serviços de conectividade banda larga e infraestrutura de fibra óptica dedicada.';
+
+  const cMensal = document.getElementById('contratoValMensal');
+  if (cMensal) cMensal.value = 'R$ 15.500,00';
+
+  const cTotal = document.getElementById('contratoValTotal');
+  if (cTotal) cTotal.value = 'R$ 186.000,00';
+
+  const cOpc = document.getElementById('contratoOpcaoSelect');
+  if (cOpc) cOpc.value = 'mensal';
+
+  const descOcor = document.getElementById('descricaoOcorrencia');
+  if (descOcor) descOcor.value = 'Análise de viabilidade jurídica sobre reajuste anual de índice inflacionário (IPCA) em contrato corporativo.';
+
+  const titReg = document.getElementById('tituloRegulamento');
+  if (titReg) titReg.value = 'Regulamento Interno de Segurança da Informação e Proteção de Dados (LGPD) v2.0';
+
+  const com = document.getElementById('formComentarios');
+  if (com) com.value = 'Solicito parecer jurídico conclusivo para validação de cláusulas de multa rescisória e vigência contratual.';
+
+  if (anexosList.length === 0) {
+    anexosList.push({ desc: 'Minuta do Contrato B2B 2026.pdf', file: 'minuta_contrato_v2.pdf' });
+    renderAnexosTable();
+  }
+
+  if (servicosList.length === 0) {
+    servicosList.push({ codigo: 'SRV-8840', uso: 'Operacional', servico: 'Conectividade Fibra Dedicada 1Gbps', objetivo: 'Expansão de Rede', escopo: 'Nacional', local: 'Campinas - SP' });
+    renderServicosTable();
+  }
+
+  const badge = document.getElementById('cnpjStatusBadge');
+  if (badge) {
+    badge.textContent = '✨ Preenchido pela IA!';
+    badge.style.color = '#00c8e6';
+  }
+}
+
+function generateAIDescription() {
+  const com = document.getElementById('formComentarios');
+  if (com) {
+    com.value = 'Trata-se de parecer jurídico consultivo para avaliação de cláusulas de rescisão antecipada, responsabilidade civil e multas contratuais, visando garantir a conformidade com as diretrizes regulatórias e mitigar riscos operacionais para a DESKTOP S.A.';
+  }
+}
+
+// === Custom Searchable Dropdown (Selecione uma opção) ===
+function toggleOpcaoDropdown(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('customOpcaoMenu');
+  if (menu) {
+    menu.classList.toggle('hidden');
+    if (!menu.classList.contains('hidden')) {
+      const searchInput = document.getElementById('customOpcaoSearchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        filterOpcaoDropdownItems('');
+        searchInput.focus();
+      }
+    }
+  }
+}
+
+function filterOpcaoDropdownItems(query) {
+  const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
+  const q = query.toLowerCase().trim();
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    if (!q || text.includes(q)) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function clearOpcaoSelection() {
+  const textEl = document.getElementById('customOpcaoSelectedText');
+  if (textEl) textEl.textContent = 'Selecione uma opção';
+  
+  const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
+  items.forEach(item => {
+    item.classList.remove('selected');
+    const checkIcon = item.querySelector('svg');
+    if (checkIcon) checkIcon.remove();
+  });
+  
+  const menu = document.getElementById('customOpcaoMenu');
+  if (menu) menu.classList.add('hidden');
+}
+
+function selectOpcaoItem(el) {
+  const val = el.getAttribute('data-value') || el.textContent.trim();
+  const textEl = document.getElementById('customOpcaoSelectedText');
+  if (textEl) textEl.textContent = val;
+
+  const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
+  items.forEach(item => {
+    item.classList.remove('selected');
+    const checkIcon = item.querySelector('svg');
+    if (checkIcon) checkIcon.remove();
+  });
+
+  el.classList.add('selected');
+  const checkSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  checkSvg.setAttribute('width', '14');
+  checkSvg.setAttribute('height', '14');
+  checkSvg.setAttribute('viewBox', '0 0 24 24');
+  checkSvg.setAttribute('fill', 'none');
+  checkSvg.setAttribute('stroke', 'currentColor');
+  checkSvg.setAttribute('stroke-width', '2.5');
+  checkSvg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+  el.prepend(checkSvg);
+
+  const menu = document.getElementById('customOpcaoMenu');
+  if (menu) menu.classList.add('hidden');
+}
+
+// Event listener global para fechar dropdown ao clicar fora
+document.addEventListener('click', (e) => {
+  const container = document.getElementById('customOpcaoDropdown');
+  if (container && !container.contains(e.target)) {
+    const menu = document.getElementById('customOpcaoMenu');
+    if (menu) menu.classList.add('hidden');
+  }
+});
+
 
