@@ -380,3 +380,85 @@ function toggleSim() {
   }
   renderImprovement();
 }
+
+// === Catalog Modal (Lecom Desktop Replica) ===
+let activeCatalogTab = 'todos';
+let selectedCatalogItem = null;
+
+function openCatalog() {
+  renderCatalogItems();
+  document.getElementById('modalCatalog').classList.add('active');
+}
+
+function closeCatalog() {
+  document.getElementById('modalCatalog').classList.remove('active');
+}
+
+function switchCatalogTab(tab) {
+  activeCatalogTab = tab;
+  document.querySelectorAll('.catalog-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  renderCatalogItems();
+}
+
+function filterCatalog() {
+  renderCatalogItems();
+}
+
+function renderCatalogItems() {
+  const container = document.getElementById('catalogSidebarList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const query = (document.getElementById('catalogSearchInput')?.value || '').toLowerCase();
+
+  LECOM_CATALOG.forEach(catGroup => {
+    const matchingItems = catGroup.items.filter(item => {
+      const matchText = (item.name + ' ' + item.version + ' ' + item.processCode + ' ' + catGroup.category).toLowerCase();
+      if (activeCatalogTab === 'favoritos') return false; // Sem favoritos marcados por padrão
+      if (activeCatalogTab === 'aplicacoes') return item.version !== '';
+      return matchText.includes(query);
+    });
+
+    if (matchingItems.length > 0) {
+      const catHeader = document.createElement('div');
+      catHeader.className = 'catalog-category-title';
+      catHeader.textContent = catGroup.category;
+      container.appendChild(catHeader);
+
+      matchingItems.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'catalog-item';
+        if (selectedCatalogItem === item.name) itemEl.classList.add('active');
+
+        itemEl.onclick = () => {
+          selectedCatalogItem = item.name;
+          renderCatalogItems();
+          // Simula início do processo selecionado
+          setTimeout(() => {
+            closeCatalog();
+            openNewProcessWizard();
+            const nTitle = document.getElementById('nTitle');
+            if (nTitle) nTitle.value = `${item.name}`;
+          }, 200);
+        };
+
+        itemEl.innerHTML = `
+          <div class="catalog-item-icon"></div>
+          <div class="catalog-item-info">
+            <div class="catalog-item-name">${item.name}</div>
+            ${item.version ? `<div class="catalog-item-sub">${item.version}</div>` : ''}
+            <div class="catalog-item-code">${item.processCode}</div>
+          </div>
+        `;
+        container.appendChild(itemEl);
+      });
+    }
+  });
+
+  if (container.children.length === 0) {
+    container.innerHTML = `<div style="padding: 20px; font-size: 0.78rem; color: #57606A; text-align: center;">Nenhum processo encontrado.</div>`;
+  }
+}
+
