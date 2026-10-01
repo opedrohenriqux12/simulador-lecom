@@ -188,6 +188,18 @@
           <input type="text" id="searchInput" placeholder="Filtrar processo ou filtro salvo">
         </div>
 
+        <!-- EMPTY VIEW -->
+        <div id="empty-view" class="empty-state" style="display: none;">
+          <div class="empty-grid-icon">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+          </div>
+          <h2 class="empty-title">Você não tem nenhuma atividade no momento.</h2>
+          <p class="empty-desc">Atividades sob sua responsabilidade aparecerão aqui agrupadas por modelo de processo. As listas de um mesmo modelo permitem que você veja os dados do filtro.</p>
+        </div>
+
         <!-- SUMMARY CARDS AND PROCESS GROUP (MINHAS ATIVIDADES) -->
         <div id="atividades-dashboard-view">
           <!-- TOP SUMMARY CARDS -->
@@ -935,8 +947,45 @@
 
     </div>
   </div>
-</div>
 
+  <!-- FLOATING CHAT WIDGET -->
+  <div class="chat-widget-container" id="chatWidgetContainer">
+    <!-- Chat Window -->
+    <div class="chat-window hidden" id="chatWindow">
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Assistente Virtual (FAQ)</span>
+        </div>
+        <button class="chat-close-btn" onclick="toggleChatWindow()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="chat-message bot-message">
+          Olá! Sou o assistente do <strong>SAC Interno (Contratação & Jurídico)</strong>. Consulte nosso guia rápido antes de abrir qualquer demanda. Como posso ajudar?
+        </div>
+        <div class="chat-faq-options" id="chatFaqOptions">
+          <button class="faq-btn" onclick="askFaq('Quais os documentos obrigatórios para anexar?')">Quais os documentos obrigatórios?</button>
+          <button class="faq-btn" onclick="askFaq('Se faltar algo, posso enviar os documentos aos poucos por e-mail?')">Posso enviar documentos aos poucos?</button>
+          <button class="faq-btn" onclick="askFaq('Se o processo for devolvido por erro, o prazo do Jurídico suspende?')">Processo devolvido suspende o prazo?</button>
+          <button class="faq-btn" onclick="askFaq('Por que a CND (Certidão Negativa) é tão importante?')">Por que a CND é importante?</button>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Digite sua dúvida..." onkeypress="handleChatEnter(event)">
+        <button class="chat-send-btn" onclick="sendChatMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Chat Button -->
+    <button class="chat-widget-btn" id="chatWidgetBtn" onclick="toggleChatWindow()" title="Assistente Virtual">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </button>
+  </div>
+</div>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>
