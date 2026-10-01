@@ -9,42 +9,13 @@
 </head>
 <body>
 
-<!-- ========== LOGIN SCREEN ========== -->
-<div id="login-screen" class="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
-      <h1>Acesso à Plataforma</h1>
-      <p>DESKTOP S.A. - Gestão Inteligente de Processos</p>
-    </div>
-    <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="field" style="margin-bottom: 12px;">
-        <label>Usuário</label>
-        <select id="login-user-select" class="login-field" required>
-          <option value="">Selecione um usuário...</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom: 20px;">
-        <label>Senha</label>
-        <input type="password" class="login-field" placeholder="Insira sua senha" value="123456" required>
-      </div>
-      <button type="submit" class="login-btn">Entrar</button>
-    </form>
-    <div class="login-footer">Plataforma Lecom v6.0 - RTM 1.08.10</div>
-  </div>
-</div>
-
-<div id="main-app" class="app hidden">
+<div id="main-app" class="app">
 
   <!-- ========== TOPBAR VINHO ========== -->
   <header class="topbar">
-    <!-- Esquerda: Grid + Logo + Busca -->
+    <!-- Esquerda: Hamburger + Logo + Busca -->
     <button class="topbar-grid-btn" title="Menu">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="4" height="4" rx="0.5"/><rect x="6" y="1" width="4" height="4" rx="0.5"/><rect x="11" y="1" width="4" height="4" rx="0.5"/><rect x="1" y="6" width="4" height="4" rx="0.5"/><rect x="6" y="6" width="4" height="4" rx="0.5"/><rect x="11" y="6" width="4" height="4" rx="0.5"/><rect x="1" y="11" width="4" height="4" rx="0.5"/><rect x="6" y="11" width="4" height="4" rx="0.5"/><rect x="11" y="11" width="4" height="4" rx="0.5"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
 
     <a href="#" class="topbar-brand">
@@ -61,37 +32,72 @@
 
     <div class="topbar-spacer"></div>
 
-    <!-- Direita: Chat + User + Help + Arrow -->
+    <!-- Direita: Chat + User Pill + Help + Arrow -->
     <div class="topbar-right">
       <button class="topbar-icon" title="Mensagens">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </button>
 
-      <!-- USER MENU -->
+      <!-- USER MENU PILL (SEM FOTO) -->
       <div class="user-menu" id="user-menu-container">
         <button class="user-menu-trigger" id="user-menu-btn" onclick="toggleUserMenu()">
-          <div class="user-avatar" id="topbar-avatar">PH</div>
-          <span class="user-name-text" id="topbar-name">PEDRO HENRIQUE</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          <span class="user-name-text" id="topbar-name">PEDRO HENRIQUE PEREIRA DOS SANTOS</span>
         </button>
         
         <div class="user-dropdown hidden" id="user-dropdown">
-          <div class="user-dropdown-header">
-            <strong id="dropdown-name">Pedro Henrique</strong>
-            <span id="dropdown-role">Analista de Processos</span>
+          <!-- Item 1: Perfil / Usuário -->
+          <div class="user-dropdown-row profile-row">
+            <svg class="dropdown-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="dropdown-row-info">
+              <strong id="dropdown-name">PEDRO HENRIQUE PEREIRA DOS SANTOS</strong>
+              <span id="dropdown-email">pedro.psantos@desktop.tec.br</span>
+            </div>
           </div>
-          <button class="user-dropdown-item" onclick="openProfile()">Meu Perfil</button>
-          <button class="user-dropdown-item">Configurações</button>
           <div class="user-dropdown-divider"></div>
-          <button class="user-dropdown-item danger" onclick="handleLogout()">Sair</button>
+
+          <!-- Item 2: Notificações -->
+          <div class="user-dropdown-row">
+            <svg class="dropdown-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <div class="dropdown-row-info">
+              <strong>Notificações</strong>
+              <span>As notificações não foram configuradas</span>
+            </div>
+          </div>
+          <div class="user-dropdown-divider"></div>
+
+          <!-- Item 3: Idioma -->
+          <div class="user-dropdown-row between-row">
+            <div class="dropdown-row-left">
+              <svg class="dropdown-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <strong>Idioma</strong>
+            </div>
+            <select class="dropdown-lang-select">
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
+          <div class="user-dropdown-divider"></div>
+
+          <!-- Item 4: Configurações do Perfil -->
+          <button class="user-dropdown-item" onclick="openProfile()">
+            <svg class="dropdown-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Configurações do perfil</span>
+          </button>
+
+          <!-- Item 5: Sair do Sistema -->
+          <button class="user-dropdown-item" onclick="handleLogout()">
+            <svg class="dropdown-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Sair do sistema</span>
+          </button>
         </div>
       </div>
 
       <button class="topbar-icon" title="Ajuda">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </button>
       <button class="topbar-icon" title="Expandir">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
   </header>
@@ -276,14 +282,14 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modalCatalog">
-  <div class="modal-box catalog-box">
+<!-- ========== PAINEL LATERAL (DRAWER): CATÁLOGO DE PROCESSO ========== -->
+<div class="drawer-overlay" id="modalCatalog" onclick="handleDrawerOverlayClick(event)">
+  <div class="catalog-drawer">
     <div class="catalog-header">
       <div class="catalog-search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="catalogSearchInput" placeholder="Pesquisar processos, categorias ou aplicações" oninput="filterCatalog()">
       </div>
-      <button class="modal-close" onclick="closeCatalog()">&times;</button>
     </div>
 
     <div class="catalog-tabs">
@@ -292,17 +298,8 @@
       <button class="catalog-tab" data-tab="favoritos" onclick="switchCatalogTab('favoritos')">Favoritos</button>
     </div>
 
-    <div class="catalog-body">
-      <div class="catalog-sidebar" id="catalogSidebarList">
-        <!-- Renderizado dinamicamente via JS -->
-      </div>
-      <div class="catalog-main" id="catalogMainView">
-        <div class="catalog-empty-preview">
-          <div class="catalog-info-icon">!</div>
-          <p class="catalog-info-title">Nenhuma atividade em alerta.</p>
-          <p class="catalog-info-sub">Atividades em alerta aparecerão aqui.</p>
-        </div>
-      </div>
+    <div class="catalog-drawer-body" id="catalogSidebarList">
+      <!-- Renderizado dinamicamente via JS -->
     </div>
   </div>
 </div>
@@ -377,6 +374,431 @@
         <button type="submit" class="btn-primary">Iniciar Processo</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- ========== TELA FULLSCREEN: PREENCHER SOLICITAÇÃO (PARECER JURÍDICO REAL) ========== -->
+<div class="fullscreen-form-overlay hidden" id="modalProcessForm">
+  
+  <!-- Topbar com Ações -->
+  <div class="form-topbar">
+    <div class="form-topbar-left">
+      <button class="form-back-btn" onclick="closeProcessForm()" title="Voltar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <div class="form-topbar-title-group">
+        <div class="form-title-row">
+          <span class="form-main-title">Preencher solicitação</span>
+          <span class="form-code-badge" id="formCodeBadge">848.452</span>
+          <span class="form-sub-info" id="formSubInfo">Solicitação de Parecer Jurídico - aberto em 01/10/2026 19:12 por PEDRO HENRIQUE PEREIRA DOS SANTOS</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-topbar-right">
+      <button class="form-icon-btn" title="Salvar Rascunho">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </button>
+      <button class="form-icon-btn" title="Fluxograma do Processo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M12 9v3M6 15v-3h12v3"/></svg>
+      </button>
+      <button class="form-icon-btn" title="Mais Opções">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Faixa de Status (Em Andamento / SLA) -->
+  <div class="form-status-banner">
+    <div class="form-status-info">
+      <span class="status-info-icon">i</span>
+      <span class="status-badge-green">Em andamento</span>
+      <span class="status-meta-text">• Ciclo 1 • Início em 01/10/2026 19:12 • Prazo para 05/10/2026 16:00 • termina em 4 dias</span>
+    </div>
+  </div>
+
+  <!-- Corpo com Rolagem -->
+  <div class="form-scroll-body">
+    <div class="form-card-container">
+
+      <div class="form-mandatory-note">(*) Campos de preenchimento obrigatório.</div>
+
+      <!-- CARD ASSISTENTE IA LECOM -->
+      <div class="ai-assistant-card">
+        <div class="ai-assistant-header">
+          <div class="ai-assistant-title">
+            <svg class="ai-sparkle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            <span>Assistente IA Lecom</span>
+          </div>
+          <span class="ai-badge">IA Ativa</span>
+        </div>
+        <p class="ai-assistant-desc">Preencha os dados do formulário automaticamente ou gere descrições jurídicas inteligentes em 1 clique.</p>
+        <div class="ai-assistant-actions">
+          <button type="button" class="btn-ai-action" onclick="generateAIAutoFill()">
+            <span>✨ Preenchimento Automático IA</span>
+          </button>
+          <button type="button" class="btn-ai-action secondary" onclick="generateAIDescription()">
+            <span>📝 Sugerir Texto Jurídico</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 1: DADOS DO SOLICITANTE -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="form-section-title">Dados do Solicitante</span>
+          <button class="form-section-toggle" type="button">▲</button>
+        </div>
+        <div class="form-section-content">
+          <div class="form-field-group">
+            <label class="field-label">Nome</label>
+            <input type="text" class="form-control-input" id="solicitudeNome" value="PEDRO HENRIQUE PEREIRA DOS SANTOS" readonly>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">E-mail</label>
+            <div class="field-value-text" id="solicitudeEmail">pedro.psantos@desktop.tec.br</div>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-field-group">
+              <label class="field-label">Gestor</label>
+              <div class="field-value-text" id="solicitudeGestor">JESUS CRISTIANO DE CARVALHO</div>
+            </div>
+            <div class="form-field-group">
+              <label class="field-label">Empresa do solicitante</label>
+              <div class="field-value-text" id="solicitudeEmpresa">DESKTOP - SIGMANET</div>
+            </div>
+            <div class="form-field-group">
+              <label class="field-label">Departamento</label>
+              <div class="field-value-text" id="solicitudeDepto">NOC</div>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Centro de custo</label>
+            <div class="field-value-text" id="solicitudeCC">10900001</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: DADOS DA SOLICITAÇÃO -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="form-section-title">Dados da Solicitação</span>
+          <button class="form-section-toggle" type="button">▲</button>
+        </div>
+        <div class="form-section-content">
+          <div class="form-field-group">
+            <label class="field-label">Tipo de solicitação <span class="req-star">*</span></label>
+            <div class="form-radio-group">
+              <label class="form-radio-label">
+                <input type="radio" name="tipoSolicitacao" value="contratos" checked onchange="toggleFormFields()">
+                <span>Análise de contratos</span>
+              </label>
+              <label class="form-radio-label">
+                <input type="radio" name="tipoSolicitacao" value="consultoria" onchange="toggleFormFields()">
+                <span>Consultoria jurídica</span>
+              </label>
+              <label class="form-radio-label">
+                <input type="radio" name="tipoSolicitacao" value="regulamentos" onchange="toggleFormFields()">
+                <span>Regulamentos internos</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- CAMPOS ESPECÍFICOS: ANÁLISE DE CONTRATOS -->
+          <div id="analiseContratosFields">
+            <div class="form-field-group" style="margin-top: 16px;">
+              <label class="field-label">Selecione: <span class="req-star">*</span></label>
+              <select class="form-control-select" id="contratoTipoSelect" onchange="toggleSubContratoFields()">
+                <option value="">Selecione</option>
+                <option value="Contrato B2B" selected>Contrato B2B</option>
+                <option value="Contrato Imobiliário">Contrato Imobiliário</option>
+                <option value="Contrato/Aditivo negociado com Compras">Contrato/Aditivo negociado com Compras</option>
+                <option value="Contrato/Aditivo sem negociação com Compras">Contrato/Aditivo sem negociação com Compras</option>
+              </select>
+            </div>
+
+            <!-- EXTRAS PARA: Contrato/Aditivo negociado com Compras -->
+            <div id="fieldsNegociadoCompras" style="display:none; margin-top: 16px;">
+              <div class="form-grid-2">
+                <div class="form-field-group">
+                  <label class="field-label">Nº Chamado <span class="req-star">*</span></label>
+                  <div class="file-input-wrapper">
+                    <input type="text" class="form-control-input" id="numChamadoCompras" placeholder="">
+                    <button class="file-clip-btn" type="button" title="Pesquisar Chamado">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-field-group">
+                  <label class="field-label">Solicitante <span class="req-star">*</span></label>
+                  <input type="text" class="form-control-input" id="solicitanteCompras" placeholder="">
+                </div>
+              </div>
+            </div>
+
+            <!-- EXTRAS PARA: Contrato/Aditivo sem negociação com Compras -->
+            <div id="fieldsSemNegociacaoCompras" style="display:none; margin-top: 16px;">
+              <div class="form-field-group">
+                <label class="field-label">Motivo <span class="req-star">*</span></label>
+                <input type="text" class="form-control-input full-w" id="motivoSemCompras" placeholder="">
+              </div>
+              <div class="form-grid-2">
+                <div class="form-field-group">
+                  <label class="field-label">Código do Centro de Custo <span class="req-star">*</span></label>
+                  <div class="file-input-wrapper">
+                    <input type="text" class="form-control-input" id="codCentroCusto" placeholder="">
+                    <button class="file-clip-btn" type="button" title="Pesquisar Centro de Custo">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-field-group">
+                  <label class="field-label">Centro de Custo <span class="req-star">*</span></label>
+                  <input type="text" class="form-control-input" id="nomeCentroCusto" placeholder="">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-field-group">
+                  <label class="field-label">Superintendente <span class="req-star">*</span></label>
+                  <input type="text" class="form-control-input" id="superintendenteName" placeholder="">
+                </div>
+                <div class="form-field-group">
+                  <label class="field-label">Diretor <span class="req-star">*</span></label>
+                  <input type="text" class="form-control-input" id="diretorName" placeholder="">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-field-group">
+              <label class="field-label">CNPJ da contratada <span class="req-star">*</span></label>
+              <div class="file-input-wrapper">
+                <input type="text" class="form-control-input full-w" id="contratadaCnpj" placeholder="00.000.000/0001-00" oninput="formatAndLookupCNPJ(event)">
+                <span class="cnpj-status-badge" id="cnpjStatusBadge"></span>
+              </div>
+            </div>
+
+            <div class="form-field-group">
+              <label class="field-label">Razão social do contratante <span class="req-star">*</span></label>
+              <input type="text" class="form-control-input full-w" id="contratanteName" value="DESKTOP S.A. - SIGMANET">
+            </div>
+
+            <div class="form-field-group">
+              <label class="field-label">Razão social da contratada <span class="req-star">*</span></label>
+              <input type="text" class="form-control-input full-w" id="contratadaName" placeholder="Informe um CNPJ válido de 14 dígitos..." readonly>
+            </div>
+
+            <div class="form-field-group">
+              <label class="field-label">Descrição do objeto do contrato <span class="req-star">*</span></label>
+              <input type="text" class="form-control-input full-w" id="contratoObjeto" placeholder="">
+            </div>
+
+            <div class="form-grid-3">
+              <div class="form-field-group">
+                <label class="field-label">Valor mensal do contrato <span class="req-star">*</span></label>
+                <input type="text" class="form-control-input" id="contratoValMensal" placeholder="">
+              </div>
+              <div class="form-field-group">
+                <label class="field-label">Valor total do contrato <span class="req-star">*</span></label>
+                <input type="text" class="form-control-input" id="contratoValTotal" placeholder="">
+              </div>
+              <div class="form-field-group">
+                <label class="field-label">Selecione uma opção <span class="req-star">*</span></label>
+                <div class="custom-dropdown-container" id="customOpcaoDropdown">
+                  <div class="custom-dropdown-trigger" onclick="toggleOpcaoDropdown(event)">
+                    <span id="customOpcaoSelectedText">Mão de obra terceirizada</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                  </div>
+                  <div class="custom-dropdown-menu hidden" id="customOpcaoMenu">
+                    <div class="custom-dropdown-search">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="text" id="customOpcaoSearchInput" placeholder="" oninput="filterOpcaoDropdownItems(this.value)">
+                    </div>
+                    <div class="custom-dropdown-action" onclick="clearOpcaoSelection()">
+                      Limpar itens selecionados
+                    </div>
+                    <div class="custom-dropdown-options" id="customOpcaoOptionsList">
+                      <div class="custom-dropdown-item" data-value="Prestação de Serviços | Outros" onclick="selectOpcaoItem(this)">
+                        Prestação de Serviços | Outros
+                      </div>
+                      <div class="custom-dropdown-item selected" data-value="Mão de obra terceirizada" onclick="selectOpcaoItem(this)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Mão de obra terceirizada</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- CAMPOS ESPECÍFICOS: CONSULTORIA JURÍDICA -->
+          <div id="consultoriaJuridicaFields" style="display:none; margin-top: 16px;">
+            <div class="form-field-group">
+              <label class="field-label">Descrição da ocorrência <span class="req-star">*</span></label>
+              <input type="text" class="form-control-input full-w" id="descricaoOcorrencia" placeholder="">
+            </div>
+          </div>
+
+          <!-- CAMPOS ESPECÍFICOS: REGULAMENTOS INTERNOS -->
+          <div id="regulamentosInternosFields" style="display:none; margin-top: 16px;">
+            <div class="form-field-group">
+              <label class="field-label">Título do Regulamento <span class="req-star">*</span></label>
+              <input type="text" class="form-control-input full-w" id="tituloRegulamento" placeholder="">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FAIXA AZUL DE AVISO 1 -->
+      <div class="form-blue-banner" id="bannerAnexarContrato">
+        FAVOR ANEXAR O CONTRATO E SEUS ADITIVOS / MINUTA.
+      </div>
+
+      <!-- SEÇÃO 3: ANEXOS (TABELA DE ANEXOS) -->
+      <div class="form-section">
+        <div class="table-box-container">
+          <div class="table-box-header-icons">
+            <button class="tb-icon-btn" type="button" title="Pasta">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </button>
+            <button class="tb-icon-btn" type="button" title="Documento">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </button>
+          </div>
+
+          <div class="table-inputs-grid">
+            <div class="form-field-group">
+              <label class="field-label">Descrição do anexo</label>
+              <input type="text" class="table-control-input" id="anexoDesc" placeholder="">
+            </div>
+            <div class="form-field-group">
+              <label class="field-label">Anexos</label>
+              <div class="file-input-wrapper">
+                <input type="text" class="table-control-input" id="anexoFile" readonly placeholder="">
+                <button class="file-clip-btn" type="button" onclick="document.getElementById('hiddenFileInput').click()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                </button>
+                <input type="file" id="hiddenFileInput" style="display:none;" onchange="handleFileSelect(event)">
+              </div>
+            </div>
+          </div>
+
+          <div class="table-add-btn-wrapper">
+            <button class="btn-add-table" type="button" onclick="addAnexoRow()">ADICIONAR DADOS NA TABELA +</button>
+          </div>
+
+          <table class="lecom-data-table">
+            <thead>
+              <tr>
+                <th>Descrição do anexo</th>
+                <th>Anexos</th>
+                <th style="width: 80px; text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tableAnexosBody">
+              <tr>
+                <td colspan="3" class="table-empty-row">Nenhum dado adicionado</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-pagination-foot">
+            <span class="page-size">20 ▾</span>
+            <span class="page-count" id="tablePageCount">1 - 0 de 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAIXA AZUL DE AVISO 2 -->
+      <div class="form-blue-banner margin-t" id="bannerControleContrato">
+        FAVOR PREENCHER A TABELA ABAIXO PARA QUE POSSAMOS INICIAR O CONTRÔLE DESTE CONTRATO/ADITIVO.
+      </div>
+
+      <!-- SEÇÃO 4: TABELA CONTROLE DE SERVIÇOS DO CONTRATO/ADITIVO -->
+      <div class="form-section" id="secControleServicos">
+        <div class="table-box-container">
+          <div class="table-inputs-grid-2">
+            <div class="form-field-group">
+              <label class="field-label">Código do serviço <span class="req-star">*</span></label>
+              <input type="text" class="table-control-input" id="servCodigo">
+            </div>
+            <div class="form-field-group">
+              <label class="field-label">Uso principal <span class="req-star">*</span></label>
+              <select class="table-control-select" id="servUso">
+                <option value="">Selecione</option>
+                <option value="Operacional">Operacional</option>
+                <option value="Administrativo">Administrativo</option>
+                <option value="Comercial">Comercial</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Serviço <span class="req-star">*</span></label>
+            <div class="file-input-wrapper">
+              <input type="text" class="table-control-input" id="servNome" placeholder="">
+              <button class="file-clip-btn" type="button" title="Pesquisar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Local de execução <span class="req-star">*</span></label>
+            <input type="text" class="table-control-input" id="servLocal" placeholder="">
+          </div>
+
+          <div class="table-add-btn-wrapper">
+            <button class="btn-add-table" type="button" onclick="addServicoRow()">ADICIONAR DADOS NA TABELA +</button>
+          </div>
+
+          <table class="lecom-data-table">
+            <thead>
+              <tr>
+                <th>Código do serviço</th>
+                <th>Uso principal</th>
+                <th>Serviço</th>
+                <th>Objetivo</th>
+                <th>Escopo</th>
+                <th>Local de execução</th>
+                <th style="width: 80px; text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tableServicosBody">
+              <tr>
+                <td colspan="7" class="table-empty-row">Nenhum dado adicionado</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-pagination-foot">
+            <span class="page-size">20 ▾</span>
+            <span class="page-count" id="tableServCount">1 - 0 de 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 4: COMENTÁRIOS -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="form-section-title">Comentários</span>
+          <button class="form-section-toggle" type="button">▲</button>
+        </div>
+        <div class="form-section-content">
+          <div class="form-field-group">
+            <textarea class="form-textarea" id="formComentarios" placeholder=""></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÕES INFERIORES: CANCELAR / ENVIAR -->
+      <div class="form-actions-footer">
+        <button type="button" class="btn-form-cancel" onclick="closeProcessForm()">CANCELAR &#10006;</button>
+        <button type="button" class="btn-form-submit" onclick="submitParecerJuridico()">ENVIAR &#10004;</button>
+      </div>
+
+    </div>
   </div>
 </div>
 
