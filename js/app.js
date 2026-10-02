@@ -2,9 +2,9 @@
 
 class Store {
   constructor() {
-    this.key = 'lecom_v6';
+    this.key = 'lecom_v6_clean';
     if (!localStorage.getItem(this.key)) {
-      localStorage.setItem(this.key, JSON.stringify(INITIAL_TASKS));
+      localStorage.setItem(this.key, JSON.stringify([]));
     }
   }
   get() { return JSON.parse(localStorage.getItem(this.key)) || []; }
@@ -140,10 +140,12 @@ function refreshView() { renderActivities(); }
 // === Activities ===
 function openProcessDetailView(procTitle) {
   const dash = document.getElementById('atividades-dashboard-view');
+  const empty = document.getElementById('empty-view');
   const tblView = document.getElementById('process-table-view');
   const titleEl = document.getElementById('processDetailTitle');
   if (titleEl) titleEl.textContent = procTitle || 'Solicitação de Parecer Jurídico';
   if (dash) dash.classList.add('hidden');
+  if (empty) empty.style.display = 'none';
   if (tblView) tblView.classList.remove('hidden');
 }
 
@@ -152,6 +154,7 @@ function closeProcessDetailView() {
   const tblView = document.getElementById('process-table-view');
   if (dash) dash.classList.remove('hidden');
   if (tblView) tblView.classList.add('hidden');
+  renderActivities();
 }
 
 function renderActivities() {
@@ -170,6 +173,17 @@ function renderActivities() {
   if (elNoprazo) elNoprazo.textContent = noprazo;
   if (elAlerta) elAlerta.textContent = alerta;
   if (elAtrasado) elAtrasado.textContent = atrasado;
+
+  const emptyView = document.getElementById('empty-view');
+  const dashView = document.getElementById('atividades-dashboard-view');
+
+  if (total === 0) {
+    if (emptyView) emptyView.style.display = 'flex';
+    if (dashView) dashView.style.display = 'none';
+  } else {
+    if (emptyView) emptyView.style.display = 'none';
+    if (dashView) dashView.style.display = 'block';
+  }
 
   const bCount = document.getElementById('proc-badge-count');
   const bStatus = document.getElementById('proc-badge-status');
@@ -1157,3 +1171,116 @@ document.addEventListener('click', (e) => {
 });
 
 
+
+// ===== CHAT WIDGET (FAQ) =====
+function toggleChatWindow() {
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.classList.toggle('hidden');
+  }
+}
+
+function askFaq(question) {
+  const faqOptions = document.getElementById('chatFaqOptions');
+  if (faqOptions) faqOptions.style.display = 'none';
+
+  appendChatMessage(question, 'user');
+  
+  setTimeout(() => {
+    appendChatMessage("<em>Consultando Política e Guia Prático de Procedimentos...</em>", 'bot');
+    
+    setTimeout(() => {
+      const chatBody = document.getElementById('chatBody');
+      if (chatBody && chatBody.lastChild) {
+        chatBody.removeChild(chatBody.lastChild);
+      }
+      
+      let answer = getBotAnswer(question);
+      appendChatMessage(answer, 'bot');
+      
+      setTimeout(() => {
+        if (faqOptions) faqOptions.style.display = 'flex';
+        scrollToBottomChat();
+      }, 1000);
+      
+    }, 1000);
+  }, 400);
+}
+
+function handleChatEnter(e) {
+  if (e.key === 'Enter') {
+    sendChatMessage();
+  }
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  appendChatMessage(msg, 'user');
+  input.value = '';
+  
+  setTimeout(() => {
+    appendChatMessage("<em>Consultando base de conhecimento do SAC Interno...</em>", 'bot');
+    
+    setTimeout(() => {
+      const chatBody = document.getElementById('chatBody');
+      if (chatBody && chatBody.lastChild) {
+        chatBody.removeChild(chatBody.lastChild);
+      }
+      
+      let answer = getBotAnswer(msg);
+      appendChatMessage(answer, 'bot');
+      scrollToBottomChat();
+    }, 1000);
+  }, 500);
+}
+
+function getBotAnswer(text) {
+  const q = text.toLowerCase();
+  
+  if (q.includes('obrigatório') || q.includes('documento')) {
+    return "<strong>Documentos Obrigatórios:</strong><br>1. Cartão CNPJ ou CPF (máx 30 dias)<br>2. Contrato Social / Estatuto Atualizado<br>3. RG/CPF ou CNH dos Signatários<br>4. Procuração (se aplicável)<br>5. Proposta Comercial / Escopo Detalhado<br>6. CND Federal (Receita / INSS)<br>7. CNDT (Trabalhista)<br>8. CRF FGTS (Caixa).<br><em>A área solicitante é responsável pela veracidade e integralidade.</em>";
+  } else if (q.includes('aos poucos') || q.includes('e-mail') || q.includes('fracionad')) {
+    return "<strong>Não.</strong> Informações e anexos enviados de forma fracionada geram perda de histórico e erros. Todo o pacote (formulário + documentos anexos) deve ser enviado de uma única vez pelo canal oficial. O Jurídico também não dá 'aceite prévio' pendente de documentos.";
+  } else if (q.includes('suspende') || q.includes('devolvid') || q.includes('erro')) {
+    return "<strong>Sim.</strong> O prazo de análise jurídica é pausado/suspenso no momento da devolução. O Setor Jurídico não inicia análise de solicitações incompletas. A contagem de prazos só recomeça a contar após a regularização completa, sendo os atrasos de exclusiva responsabilidade da área solicitante.";
+  } else if (q.includes('cnd') || q.includes('certidão') || q.includes('certidao')) {
+    return "As CNDs são fundamentais porque, se contratarmos um fornecedor com dívidas trabalhistas ou fiscais graves, a nossa empresa pode ser responsabilizada subsidiariamente pelas dívidas dele. Elas garantem que o fornecedor está em dia com as obrigações.";
+  } else if (q.includes('urgente') || q.includes('prioridade')) {
+    return "Urgências operacionais devem ser justificadas formalmente e aprovadas pela Diretoria da Área Solicitante. Mas <strong>atenção:</strong> mesmo em casos de urgência, a dispensa da documentação obrigatória não é permitida.";
+  } else if (q.includes('aceite prévio') || q.includes('começar a analisar')) {
+    return "A análise jurídica só é eficaz e segura com todos os documentos. O Jurídico <strong>não</strong> dá aceite prévio e não inicia a análise com pendências. A demanda só entra na fila após a entrega do pacote 100% completo.";
+  } else if (q.includes('responsabilidade') || q.includes('veracidade')) {
+    return "A área solicitante é <strong>integralmente responsável</strong> por reunir, conferir, validar e responder pela veracidade e atualização de todas as informações e documentos enviados ao Setor Jurídico antes do envio da solicitação.";
+  }
+  
+  return "Desculpe, não encontrei uma resposta exata na Política de Procedimentos. Consulte o 'Guia Prático' completo ou selecione uma das opções recomendadas.";
+}
+
+function appendChatMessage(text, sender) {
+  const chatBody = document.getElementById('chatBody');
+  if (!chatBody) return;
+  
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `chat-message ${sender}-message`;
+  msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+  
+  const faqOptions = document.getElementById('chatFaqOptions');
+  if (faqOptions) {
+    chatBody.insertBefore(msgDiv, faqOptions);
+  } else {
+    chatBody.appendChild(msgDiv);
+  }
+  
+  scrollToBottomChat();
+}
+
+function scrollToBottomChat() {
+  const chatBody = document.getElementById('chatBody');
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+}
