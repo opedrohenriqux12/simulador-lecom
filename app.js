@@ -2,9 +2,9 @@
 
 class Store {
   constructor() {
-    this.key = 'lecom_v6';
+    this.key = 'lecom_v6_clean';
     if (!localStorage.getItem(this.key)) {
-      localStorage.setItem(this.key, JSON.stringify(INITIAL_TASKS));
+      localStorage.setItem(this.key, JSON.stringify([]));
     }
   }
   get() { return JSON.parse(localStorage.getItem(this.key)) || []; }
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setCurrentUser(USERS[0]);
   initNav();
   renderActivities();
+  renderProcessTableBody();
   initModal();
   initSearch();
   
@@ -137,33 +138,57 @@ function toggleView() {
 function refreshView() { renderActivities(); }
 
 // === Activities ===
+function openProcessDetailView(procTitle) {
+  const dash = document.getElementById('atividades-dashboard-view');
+  const empty = document.getElementById('empty-view');
+  const tblView = document.getElementById('process-table-view');
+  const titleEl = document.getElementById('processDetailTitle');
+  if (titleEl) titleEl.textContent = procTitle || 'Solicitação de Parecer Jurídico';
+  if (dash) dash.classList.add('hidden');
+  if (empty) empty.style.display = 'none';
+  if (tblView) tblView.classList.remove('hidden');
+}
+
+function closeProcessDetailView() {
+  const dash = document.getElementById('atividades-dashboard-view');
+  const tblView = document.getElementById('process-table-view');
+  if (dash) dash.classList.remove('hidden');
+  if (tblView) tblView.classList.add('hidden');
+  renderActivities();
+}
+
 function renderActivities() {
-  const emptyEl = document.getElementById('empty-view');
-  const cardsEl = document.getElementById('cards-view');
   const tasks = store.get();
+  const total = tasks.length;
+  const noprazo = tasks.filter(t => t.slaStatus === 'SUCCESS' || t.status === 'EM_ANDAMENTO').length;
+  const alerta = tasks.filter(t => t.slaStatus === 'WARNING').length;
+  const atrasado = tasks.filter(t => t.slaStatus === 'DANGER').length;
 
-  let filtered = tasks;
-  if (currentTab === 'EM_ALERTA') filtered = tasks.filter(t => t.slaStatus === 'WARNING');
-  else if (currentTab === 'EM_ATRASO') filtered = tasks.filter(t => t.slaStatus === 'DANGER');
+  const elTotal = document.getElementById('atv-val-total');
+  const elNoprazo = document.getElementById('atv-val-noprazo');
+  const elAlerta = document.getElementById('atv-val-alerta');
+  const elAtrasado = document.getElementById('atv-val-atrasado');
 
-  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase();
-  if (searchVal) {
-    filtered = filtered.filter(t =>
-      t.title.toLowerCase().includes(searchVal) ||
-      t.id.toLowerCase().includes(searchVal) ||
-      t.requester.toLowerCase().includes(searchVal)
-    );
-    showEmpty = false;
-  }
+  if (elTotal) elTotal.textContent = total;
+  if (elNoprazo) elNoprazo.textContent = noprazo;
+  if (elAlerta) elAlerta.textContent = alerta;
+  if (elAtrasado) elAtrasado.textContent = atrasado;
 
-  if (showEmpty || filtered.length === 0) {
-    emptyEl.classList.remove('hidden');
-    cardsEl.classList.add('hidden');
+  const emptyView = document.getElementById('empty-view');
+  const dashView = document.getElementById('atividades-dashboard-view');
+
+  if (total === 0) {
+    if (emptyView) emptyView.style.display = 'flex';
+    if (dashView) dashView.style.display = 'none';
   } else {
-    emptyEl.classList.add('hidden');
-    cardsEl.classList.remove('hidden');
-    renderCards(filtered);
+    if (emptyView) emptyView.style.display = 'none';
+    if (dashView) dashView.style.display = 'block';
   }
+
+  const bCount = document.getElementById('proc-badge-count');
+  const bStatus = document.getElementById('proc-badge-status');
+  if (bCount) bCount.textContent = `${total} ${total === 1 ? 'atividade' : 'atividades'}`;
+  if (bStatus) bStatus.textContent = `${noprazo} no prazo`;
 }
 
 function renderCards(tasks) {
@@ -551,6 +576,127 @@ function toggleFormFields() {
   }
 }
 
+let selectedProcessIds = new Set();
+
+function toggleSelectionMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('selectionDropdownMenu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+function clearTableSelection() {
+  selectedProcessIds.clear();
+  const selectAllCb = document.getElementById('selectAllCheckbox');
+  if (selectAllCb) selectAllCb.checked = false;
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+  updateSelectionUI();
+}
+
+function toggleSelectAllRows(masterCb) {
+  const isChecked = masterCb.checked;
+  const tasks = store.get();
+  selectedProcessIds.clear();
+  if (isChecked) {
+    tasks.forEach(t => selectedProcessIds.add(t.id));
+  }
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked);
+  updateSelectionUI();
+}
+
+function toggleRowSelection(taskId, cb, event) {
+  if (event) event.stopPropagation();
+  if (cb.checked) {
+    selectedProcessIds.add(taskId);
+  } else {
+    selectedProcessIds.delete(taskId);
+  }
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  const count = selectedProcessIds.size;
+  const normalHeader = document.getElementById('normalHeader');
+  const selectionHeader = document.getElementById('selectionHeader');
+  const titleEl = document.getElementById('selectionCountTitle');
+  const subEl = document.getElementById('selectionCountSub');
+
+  if (count > 0) {
+    if (normalHeader) normalHeader.classList.add('hidden');
+    if (selectionHeader) selectionHeader.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = `${count} atividade(s) selecionada(s)`;
+    if (subEl) subEl.textContent = `de ${store.get().length} atividade(s)`;
+  } else {
+    if (normalHeader) normalHeader.classList.remove('hidden');
+    if (selectionHeader) selectionHeader.classList.add('hidden');
+  }
+}
+
+function cancelarProcessosSelecionados() {
+  const count = selectedProcessIds.size;
+  if (count === 0) return;
+
+  const confirmed = confirm(`Deseja realmente cancelar/rejeitar as ${count} atividade(s) selecionada(s)?`);
+  if (!confirmed) return;
+
+  let tasks = store.get();
+  tasks = tasks.filter(t => !selectedProcessIds.has(t.id));
+  store.save(tasks);
+
+  clearTableSelection();
+  renderActivities();
+  renderProcessTableBody();
+  alert('Processo(s) cancelado(s) e removido(s) com sucesso.');
+}
+
+function handleMenuAction(action) {
+  const menu = document.getElementById('selectionDropdownMenu');
+  if (menu) menu.classList.add('hidden');
+  if (action === 'acesso') alert('Acesso múltiplo ativado para os itens selecionados.');
+  if (action === 'aprovar') alert('Todas as atividades selecionadas foram aprovadas.');
+  if (action === 'filtro') alert('Novo filtro criado a partir da seleção.');
+}
+
+function renderProcessTableBody() {
+  const tbody = document.getElementById('processTableBody');
+  if (!tbody) return;
+  const tasks = store.get();
+  tbody.innerHTML = '';
+  
+  if (tasks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="14" style="text-align:center;color:#718096;padding:16px;">Nenhum dado adicionado</td></tr>`;
+    updateSelectionUI();
+    return;
+  }
+
+  tasks.forEach(task => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => openParecerJuridicoForm(task.title);
+    const nowStr = '01/10/2026 15:05';
+    const deadlineStr = '05/10/2026 15:05';
+    const requester = currentUser ? currentUser.name.toUpperCase() : 'PEDRO HENRIQUE PEREIRA DOS SANTOS';
+    const isChecked = selectedProcessIds.has(task.id);
+
+    tr.innerHTML = `
+      <td><input type="checkbox" class="row-checkbox" ${isChecked ? 'checked' : ''} onclick="toggleRowSelection('${task.id}', this, event)"></td>
+      <td class="code-link">848.165</td>
+      <td class="activity-link">Preencher solicitação</td>
+      <td>${requester}</td>
+      <td>${nowStr}</td>
+      <td>${nowStr}</td>
+      <td>${deadlineStr}</td>
+      <td><span class="badge-em-andamento">Em andamento</span></td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateSelectionUI();
+}
+
 function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídico') {
   const code = Math.floor(100000 + Math.random() * 900000);
   const now = new Date();
@@ -569,11 +715,30 @@ function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídi
     if (elEmail) elEmail.textContent = currentUser.email;
   }
 
+  // Garantir que a atividade apareça na tela inicial como rascunho/aberta se o store estiver vazio
+  const tasks = store.get();
+  if (tasks.length === 0) {
+    store.add({
+      id: 'SOL-2026-8481',
+      processId: 'proc_juridico',
+      title: processName,
+      requester: currentUser ? currentUser.name : 'PEDRO HENRIQUE PEREIRA DOS SANTOS',
+      department: 'Engenharia de Processos',
+      currentStepIndex: 0,
+      status: 'EM_ANDAMENTO',
+      slaStatus: 'SUCCESS',
+      slaDueDate: '2026-10-05T16:00:00',
+      createdAt: new Date().toISOString()
+    });
+  }
+
   anexosList = [];
   servicosList = [];
   renderAnexosTable();
   renderServicosTable();
   toggleFormFields();
+  renderActivities();
+  renderProcessTableBody();
 
   formModal.classList.remove('hidden');
 }
@@ -581,6 +746,8 @@ function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídi
 function closeProcessForm() {
   const formModal = document.getElementById('modalProcessForm');
   if (formModal) formModal.classList.add('hidden');
+  renderActivities();
+  renderProcessTableBody();
 }
 
 function handleFileSelect(e) {
@@ -798,6 +965,7 @@ async function formatAndLookupCNPJ(e) {
           badge.textContent = '✓ CNPJ Válido & Encontrado!';
           badge.style.color = '#3FB950';
         }
+        generateContractDescriptionFromCNPJ(val, data);
         return;
       }
     }
@@ -820,6 +988,27 @@ async function formatAndLookupCNPJ(e) {
     badge.textContent = '✓ CNPJ Válido & Encontrado!';
     badge.style.color = '#3FB950';
   }
+  generateContractDescriptionFromCNPJ(val, null);
+}
+
+function generateContractDescriptionFromCNPJ(cnpj, apiData) {
+  const descInput = document.getElementById('contratoObjeto');
+  if (!descInput) return;
+
+  if (apiData && apiData.cnae_fiscal_descricao) {
+    descInput.value = `Prestação de serviços de ${apiData.cnae_fiscal_descricao.toLowerCase()}.`;
+    return;
+  }
+
+  const MOCK_DESC = {
+    '33000167000101': 'Prestação de serviços de telecomunicações de voz, dados e conectividade.',
+    '00000000000191': 'Prestação de serviços bancários e soluções financeiras corporativas.',
+    '60701190000104': 'Prestação de serviços financeiros e intermediação de negócios.',
+    '02558157000162': 'Prestação de serviços de telecomunicações e infraestrutura de rede.',
+    '04206050000180': 'Prestação de serviços de telecomunicações móveis e conectividade IP.'
+  };
+
+  descInput.value = MOCK_DESC[cnpj] || 'Prestação de serviços e fornecimento de soluções corporativas.';
 }
 
 function generateAIAutoFill() {
@@ -982,3 +1171,116 @@ document.addEventListener('click', (e) => {
 });
 
 
+
+// ===== CHAT WIDGET (FAQ) =====
+function toggleChatWindow() {
+  const chatWindow = document.getElementById('chatWindow');
+  if (chatWindow) {
+    chatWindow.classList.toggle('hidden');
+  }
+}
+
+function askFaq(question) {
+  const faqOptions = document.getElementById('chatFaqOptions');
+  if (faqOptions) faqOptions.style.display = 'none';
+
+  appendChatMessage(question, 'user');
+  
+  setTimeout(() => {
+    appendChatMessage("<em>Consultando Política e Guia Prático de Procedimentos...</em>", 'bot');
+    
+    setTimeout(() => {
+      const chatBody = document.getElementById('chatBody');
+      if (chatBody && chatBody.lastChild) {
+        chatBody.removeChild(chatBody.lastChild);
+      }
+      
+      let answer = getBotAnswer(question);
+      appendChatMessage(answer, 'bot');
+      
+      setTimeout(() => {
+        if (faqOptions) faqOptions.style.display = 'flex';
+        scrollToBottomChat();
+      }, 1000);
+      
+    }, 1000);
+  }, 400);
+}
+
+function handleChatEnter(e) {
+  if (e.key === 'Enter') {
+    sendChatMessage();
+  }
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  appendChatMessage(msg, 'user');
+  input.value = '';
+  
+  setTimeout(() => {
+    appendChatMessage("<em>Consultando base de conhecimento do SAC Interno...</em>", 'bot');
+    
+    setTimeout(() => {
+      const chatBody = document.getElementById('chatBody');
+      if (chatBody && chatBody.lastChild) {
+        chatBody.removeChild(chatBody.lastChild);
+      }
+      
+      let answer = getBotAnswer(msg);
+      appendChatMessage(answer, 'bot');
+      scrollToBottomChat();
+    }, 1000);
+  }, 500);
+}
+
+function getBotAnswer(text) {
+  const q = text.toLowerCase();
+  
+  if (q.includes('obrigatório') || q.includes('documento')) {
+    return "<strong>Documentos Obrigatórios:</strong><br>1. Cartão CNPJ ou CPF (máx 30 dias)<br>2. Contrato Social / Estatuto Atualizado<br>3. RG/CPF ou CNH dos Signatários<br>4. Procuração (se aplicável)<br>5. Proposta Comercial / Escopo Detalhado<br>6. CND Federal (Receita / INSS)<br>7. CNDT (Trabalhista)<br>8. CRF FGTS (Caixa).<br><em>A área solicitante é responsável pela veracidade e integralidade.</em>";
+  } else if (q.includes('aos poucos') || q.includes('e-mail') || q.includes('fracionad')) {
+    return "<strong>Não.</strong> Informações e anexos enviados de forma fracionada geram perda de histórico e erros. Todo o pacote (formulário + documentos anexos) deve ser enviado de uma única vez pelo canal oficial. O Jurídico também não dá 'aceite prévio' pendente de documentos.";
+  } else if (q.includes('suspende') || q.includes('devolvid') || q.includes('erro')) {
+    return "<strong>Sim.</strong> O prazo de análise jurídica é pausado/suspenso no momento da devolução. O Setor Jurídico não inicia análise de solicitações incompletas. A contagem de prazos só recomeça a contar após a regularização completa, sendo os atrasos de exclusiva responsabilidade da área solicitante.";
+  } else if (q.includes('cnd') || q.includes('certidão') || q.includes('certidao')) {
+    return "As CNDs são fundamentais porque, se contratarmos um fornecedor com dívidas trabalhistas ou fiscais graves, a nossa empresa pode ser responsabilizada subsidiariamente pelas dívidas dele. Elas garantem que o fornecedor está em dia com as obrigações.";
+  } else if (q.includes('urgente') || q.includes('prioridade')) {
+    return "Urgências operacionais devem ser justificadas formalmente e aprovadas pela Diretoria da Área Solicitante. Mas <strong>atenção:</strong> mesmo em casos de urgência, a dispensa da documentação obrigatória não é permitida.";
+  } else if (q.includes('aceite prévio') || q.includes('começar a analisar')) {
+    return "A análise jurídica só é eficaz e segura com todos os documentos. O Jurídico <strong>não</strong> dá aceite prévio e não inicia a análise com pendências. A demanda só entra na fila após a entrega do pacote 100% completo.";
+  } else if (q.includes('responsabilidade') || q.includes('veracidade')) {
+    return "A área solicitante é <strong>integralmente responsável</strong> por reunir, conferir, validar e responder pela veracidade e atualização de todas as informações e documentos enviados ao Setor Jurídico antes do envio da solicitação.";
+  }
+  
+  return "Desculpe, não encontrei uma resposta exata na Política de Procedimentos. Consulte o 'Guia Prático' completo ou selecione uma das opções recomendadas.";
+}
+
+function appendChatMessage(text, sender) {
+  const chatBody = document.getElementById('chatBody');
+  if (!chatBody) return;
+  
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `chat-message ${sender}-message`;
+  msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+  
+  const faqOptions = document.getElementById('chatFaqOptions');
+  if (faqOptions) {
+    chatBody.insertBefore(msgDiv, faqOptions);
+  } else {
+    chatBody.appendChild(msgDiv);
+  }
+  
+  scrollToBottomChat();
+}
+
+function scrollToBottomChat() {
+  const chatBody = document.getElementById('chatBody');
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+}
