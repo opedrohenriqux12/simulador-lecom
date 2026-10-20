@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   --topbar-bg: #5C0A0A;
@@ -1902,4 +1902,338 @@ html,body{height:100%;overflow:hidden;background:var(--body-bg);color:var(--text
 }
 .chat-send-btn:hover {
   background: #2b74d1;
+}
+
+
+/* ==========================================================================
+   BOTÃO E MODAL: EXEMPLO DE CONTRATO (SOLICITAÇÃO DE PARECER JURÍDICO)
+   ========================================================================== */
+.exemplo-contrato-box {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  background: #0E141E;
+  border: 1px solid #1F293D;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.btn-exemplo-contrato {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #192438 0%, #0D1626 100%);
+  border: 1px solid #2563EB;
+  color: #F1F5F9;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+.btn-exemplo-contrato:hover {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+.btn-exemplo-contrato svg {
+  color: #60A5FA;
+  transition: color 0.2s;
+}
+.btn-exemplo-contrato:hover svg {
+  color: #FFFFFF;
+}
+.exemplo-badge-tag {
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.45);
+  color: #93C5FD;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  margin-left: 6px;
+  transition: all 0.2s;
+}
+.btn-exemplo-contrato:hover .exemplo-badge-tag {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #FFFFFF;
+}
+.exemplo-hint-text {
+  font-size: 0.74rem;
+  color: #8B949E;
+}
+.btn-link-view-exemplo {
+  background: none;
+  border: none;
+  color: #38BDF8;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.2s;
+}
+.btn-link-view-exemplo:hover {
+  color: #93C5FD;
+}
+
+/* Modal Exemplo de Contrato */
+.modal-exemplo-overlay {
+  z-index: 6500 !important;
+}
+.modal-exemplo-box {
+  max-width: 900px !important;
+  width: 92% !important;
+  max-height: 90vh !important;
+  background: #0F141C !important;
+  border: 1px solid #30363D !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.85) !important;
+  border-radius: 10px !important;
+}
+.modal-exemplo-head {
+  padding: 16px 20px !important;
+  background: #161B22 !important;
+  border-bottom: 1px solid #21262D !important;
+}
+.exemplo-head-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.exemplo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.exemplo-title-row h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+.exemplo-subtitle {
+  font-size: 0.78rem;
+  color: #8B949E;
+  margin: 0;
+}
+.exemplo-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #111620;
+  border-bottom: 1px solid #21262D;
+  flex-wrap: wrap;
+}
+.exemplo-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #161B22;
+  border: 1px solid #30363D;
+  color: #8B949E;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.exemplo-tab-btn .tab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4B5563;
+}
+.exemplo-tab-btn:hover {
+  background: #1C2333;
+  color: #E2E8F0;
+  border-color: #4B5563;
+}
+.exemplo-tab-btn.active {
+  background: #0D3868;
+  border-color: #2196F3;
+  color: #FFFFFF;
+}
+.exemplo-tab-btn.active .tab-dot {
+  background: #22C55E;
+  box-shadow: 0 0 6px #22C55E;
+}
+.exemplo-tabs-spacer {
+  flex: 1;
+}
+.btn-copy-minuta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1F2937;
+  border: 1px solid #374151;
+  color: #F3F4F6;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy-minuta:hover {
+  background: #2563EB;
+  border-color: #3B82F6;
+  color: #FFFFFF;
+}
+.exemplo-notice-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(33, 150, 243, 0.08);
+  border-bottom: 1px solid rgba(33, 150, 243, 0.2);
+  font-size: 0.78rem;
+  color: #93C5FD;
+}
+.modal-exemplo-body {
+  padding: 20px;
+  background: #0D1117;
+  overflow-y: auto;
+  max-height: 55vh;
+}
+.contract-doc-paper {
+  background: #161B22;
+  border: 1px solid #21262D;
+  border-radius: 8px;
+  padding: 24px 28px;
+  color: #E2E8F0;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.doc-header-banner {
+  position: relative;
+  border-bottom: 2px solid #21262D;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.doc-watermark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #64748B;
+  border: 1px dashed #475569;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.doc-badge-pill {
+  display: inline-block;
+  background: rgba(33, 150, 243, 0.15);
+  color: #60A5FA;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.doc-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.doc-subtitle {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin: 0;
+}
+.contract-dicas-box {
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.dicas-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FDE047;
+  margin-bottom: 6px;
+}
+.dicas-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #FEF08A;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.contract-preamble {
+  background: #0E131A;
+  border-left: 3px solid #2563EB;
+  padding: 12px 16px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 20px;
+  color: #CBD5E1;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.contract-clause {
+  margin-bottom: 18px;
+}
+.clause-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #60A5FA;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.clause-body {
+  color: #CBD5E1;
+  font-size: 0.83rem;
+  text-align: justify;
+  line-height: 1.6;
+}
+.contract-closing {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #21262D;
+  color: #94A3B8;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+.modal-exemplo-foot {
+  padding: 12px 20px !important;
+  background: #111620 !important;
+  border-top: 1px solid #21262D !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between !important;
+}
+.btn-apply-form-option {
+  background: #064E3B;
+  border: 1px solid #059669;
+  color: #34D399;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-apply-form-option:hover {
+  background: #059669;
+  color: #FFFFFF;
+}
+.exemplo-foot-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
