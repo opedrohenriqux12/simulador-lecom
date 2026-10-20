@@ -639,6 +639,22 @@
             </div>
           </div>
 
+          <!-- BOTÃO EXEMPLO DE CONTRATO (SOLICITAÇÃO DE PARECER JURÍDICO) -->
+          <div class="form-field-group exemplo-contrato-box" id="btnExemploContratoContainer">
+            <button type="button" class="btn-exemplo-contrato" onclick="openExemploContratoModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Exemplo de Contrato</span>
+              <span class="exemplo-badge-tag" id="exemploCurrentSelectedBadge">Mão de obra terceirizada</span>
+            </button>
+            <span class="exemplo-hint-text">Consulte a minuta de referência jurídica para o contrato conforme a opção selecionada</span>
+          </div>
+
           <!-- CAMPOS ESPECÍFICOS: ANÁLISE DE CONTRATOS -->
           <div id="analiseContratosFields">
             <div class="form-field-group" style="margin-top: 16px;">
@@ -737,7 +753,10 @@
                 <input type="text" class="form-control-input" id="contratoValTotal" placeholder="">
               </div>
               <div class="form-field-group">
-                <label class="field-label">Selecione uma opção <span class="req-star">*</span></label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label class="field-label" style="margin-bottom: 0;">Selecione uma opção <span class="req-star">*</span></label>
+                  <button type="button" class="btn-link-view-exemplo" onclick="openExemploContratoModal()" title="Ver modelo de contrato desta opção">📄 Ver Modelo</button>
+                </div>
                 <div class="custom-dropdown-container" id="customOpcaoDropdown">
                   <div class="custom-dropdown-trigger" onclick="toggleOpcaoDropdown(event)">
                     <span id="customOpcaoSelectedText">Mão de obra terceirizada</span>
@@ -931,6 +950,70 @@
         <button type="button" class="btn-form-submit" onclick="submitParecerJuridico()">ENVIAR &#10004;</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ========== MODAL: EXEMPLO DE CONTRATO (SOLICITAÇÃO DE PARECER JURÍDICO) ========== -->
+  <div class="modal-overlay modal-exemplo-overlay" id="modalExemploContrato" onclick="handleExemploOverlayClick(event)">
+    <div class="modal-box modal-exemplo-box">
+      <div class="modal-head modal-exemplo-head">
+        <div class="exemplo-head-info">
+          <div class="exemplo-title-row">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3>Exemplo de Contrato (Minuta Padrão de Referência)</h3>
+          </div>
+          <p class="exemplo-subtitle">Consulte e utilize as cláusulas abaixo como referência para a formulação do seu contrato antes da submissão.</p>
+        </div>
+        <button class="modal-close" onclick="closeExemploContratoModal()" title="Fechar">&times;</button>
+      </div>
+
+      <!-- Abas de Opções do Contrato -->
+      <div class="exemplo-tabs-bar">
+        <button type="button" class="exemplo-tab-btn" id="tabExemploPrestacao" onclick="switchExemploTab('prestacao')">
+          <span class="tab-dot"></span>
+          <span>Prestação de Serviços | Outros</span>
+        </button>
+        <button type="button" class="exemplo-tab-btn active" id="tabExemploTerceirizada" onclick="switchExemploTab('terceirizada')">
+          <span class="tab-dot"></span>
+          <span>Mão de obra terceirizada</span>
+        </button>
+        <div class="exemplo-tabs-spacer"></div>
+        <button type="button" class="btn-copy-minuta" onclick="copyExemploContratoText()" title="Copiar texto integral da minuta">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span id="btnCopyText">Copiar Minuta</span>
+        </button>
+      </div>
+
+      <!-- Faixa Informativa da Opção Selecionada -->
+      <div class="exemplo-notice-bar" id="exemploNoticeBar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span id="exemploNoticeText">Exibindo minuta modelo de: <strong>Mão de obra terceirizada</strong>.</span>
+      </div>
+
+      <!-- Corpo da Minuta com Rolagem -->
+      <div class="modal-body modal-exemplo-body">
+        <div class="contract-doc-paper" id="contractDocPaper">
+          <!-- Conteúdo da minuta carregado dinamicamente via JS -->
+        </div>
+      </div>
+
+      <div class="modal-foot modal-exemplo-foot">
+        <div class="exemplo-foot-left">
+          <button type="button" class="btn-apply-form-option" onclick="applyCurrentExemploToForm()" title="Sincronizar esta opção diretamente com o campo do formulário">
+            ✓ Usar esta opção no formulário
+          </button>
+        </div>
+        <div class="exemplo-foot-right">
+          <button type="button" class="btn-secondary" onclick="closeExemploContratoModal()">Fechar</button>
+          <button type="button" class="btn-primary" onclick="copyExemploContratoText()">Copiar Modelo Completo</button>
+        </div>
+      </div>
     </div>
   </div>
 

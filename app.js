@@ -542,6 +542,7 @@ function toggleFormFields() {
   const containerContratos = document.getElementById('analiseContratosFields');
   const containerConsultoria = document.getElementById('consultoriaJuridicaFields');
   const containerRegulamentos = document.getElementById('regulamentosInternosFields');
+  const btnExemploContrato = document.getElementById('btnExemploContratoContainer');
   
   const banner1 = document.getElementById('bannerAnexarContrato');
   const banner2 = document.getElementById('bannerControleContrato');
@@ -551,6 +552,7 @@ function toggleFormFields() {
     if (containerContratos) containerContratos.style.display = 'block';
     if (containerConsultoria) containerConsultoria.style.display = 'none';
     if (containerRegulamentos) containerRegulamentos.style.display = 'none';
+    if (btnExemploContrato) btnExemploContrato.style.display = 'flex';
 
     if (banner1) banner1.style.display = 'block';
     if (banner2) banner2.style.display = 'block';
@@ -561,6 +563,7 @@ function toggleFormFields() {
     if (containerContratos) containerContratos.style.display = 'none';
     if (containerConsultoria) containerConsultoria.style.display = 'block';
     if (containerRegulamentos) containerRegulamentos.style.display = 'none';
+    if (btnExemploContrato) btnExemploContrato.style.display = 'none';
 
     if (banner1) banner1.style.display = 'none';
     if (banner2) banner2.style.display = 'none';
@@ -569,6 +572,7 @@ function toggleFormFields() {
     if (containerContratos) containerContratos.style.display = 'none';
     if (containerConsultoria) containerConsultoria.style.display = 'none';
     if (containerRegulamentos) containerRegulamentos.style.display = 'block';
+    if (btnExemploContrato) btnExemploContrato.style.display = 'none';
 
     if (banner1) banner1.style.display = 'none';
     if (banner2) banner2.style.display = 'none';
@@ -737,6 +741,10 @@ function openParecerJuridicoForm(processName = 'Solicitação de Parecer Jurídi
   renderAnexosTable();
   renderServicosTable();
   toggleFormFields();
+  const selectedTextEl = document.getElementById('customOpcaoSelectedText');
+  if (selectedTextEl) {
+    updateExemploContratoButtonState(selectedTextEl.textContent);
+  }
   renderActivities();
   renderProcessTableBody();
 
@@ -1122,6 +1130,7 @@ function filterOpcaoDropdownItems(query) {
 function clearOpcaoSelection() {
   const textEl = document.getElementById('customOpcaoSelectedText');
   if (textEl) textEl.textContent = 'Selecione uma opção';
+  updateExemploContratoButtonState('Selecione uma opção');
   
   const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
   items.forEach(item => {
@@ -1138,6 +1147,7 @@ function selectOpcaoItem(el) {
   const val = el.getAttribute('data-value') || el.textContent.trim();
   const textEl = document.getElementById('customOpcaoSelectedText');
   if (textEl) textEl.textContent = val;
+  updateExemploContratoButtonState(val);
 
   const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
   items.forEach(item => {
@@ -1169,6 +1179,191 @@ document.addEventListener('click', (e) => {
     if (menu) menu.classList.add('hidden');
   }
 });
+
+// ===== MODAL & FUNÇÕES: EXEMPLO DE CONTRATO =====
+let currentExemploTab = 'terceirizada';
+
+function updateExemploContratoButtonState(val) {
+  const badge = document.getElementById('exemploCurrentSelectedBadge');
+  if (badge) {
+    if (val && val !== 'Selecione uma opção') {
+      badge.textContent = val;
+    } else {
+      badge.textContent = 'Mão de obra terceirizada';
+    }
+  }
+}
+
+function openExemploContratoModal(opcaoDesejada) {
+  const modal = document.getElementById('modalExemploContrato');
+  if (!modal) return;
+
+  let targetTab = 'terceirizada';
+  if (opcaoDesejada) {
+    if (opcaoDesejada.includes('Prestação') || opcaoDesejada.includes('Outros') || opcaoDesejada === 'prestacao') {
+      targetTab = 'prestacao';
+    } else {
+      targetTab = 'terceirizada';
+    }
+  } else {
+    const selectedTextEl = document.getElementById('customOpcaoSelectedText');
+    const selectedText = selectedTextEl ? selectedTextEl.textContent : '';
+    if (selectedText.includes('Prestação') || selectedText.includes('Outros')) {
+      targetTab = 'prestacao';
+    } else {
+      targetTab = 'terceirizada';
+    }
+  }
+
+  switchExemploTab(targetTab);
+  modal.classList.add('active');
+}
+
+function closeExemploContratoModal() {
+  const modal = document.getElementById('modalExemploContrato');
+  if (modal) modal.classList.remove('active');
+}
+
+function handleExemploOverlayClick(e) {
+  if (e.target.id === 'modalExemploContrato') {
+    closeExemploContratoModal();
+  }
+}
+
+function switchExemploTab(tabKey) {
+  currentExemploTab = tabKey;
+  const btnPrestacao = document.getElementById('tabExemploPrestacao');
+  const btnTerceirizada = document.getElementById('tabExemploTerceirizada');
+
+  if (tabKey === 'prestacao') {
+    if (btnPrestacao) btnPrestacao.classList.add('active');
+    if (btnTerceirizada) btnTerceirizada.classList.remove('active');
+  } else {
+    if (btnTerceirizada) btnTerceirizada.classList.add('active');
+    if (btnPrestacao) btnPrestacao.classList.remove('active');
+  }
+
+  renderExemploContrato(tabKey);
+}
+
+function renderExemploContrato(tabKey) {
+  if (typeof CONTRATO_MODELOS === 'undefined') return;
+  const model = CONTRATO_MODELOS[tabKey];
+  const container = document.getElementById('contractDocPaper');
+  const noticeText = document.getElementById('exemploNoticeText');
+
+  if (noticeText && model) {
+    noticeText.innerHTML = `Exibindo minuta modelo de: <strong>${model.title}</strong> &bull; ${model.tipoLabel}`;
+  }
+
+  if (!container || !model) return;
+
+  let clausulasHtml = model.clausulas.map(c => `
+    <div class="contract-clause">
+      <h4 class="clause-title">CLÁUSULA ${c.num}ª – ${c.titulo}</h4>
+      <div class="clause-body">${c.texto.replace(/\n/g, '<br>')}</div>
+    </div>
+  `).join('');
+
+  let dicasHtml = '';
+  if (model.dicas && model.dicas.length > 0) {
+    dicasHtml = `
+      <div class="contract-dicas-box">
+        <div class="dicas-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Orientações Jurídicas Importantes para o Requerente:</span>
+        </div>
+        <ul class="dicas-list">
+          ${model.dicas.map(d => `<li>${d}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="doc-header-banner">
+      <div class="doc-watermark">MINUTA DE REFERÊNCIA</div>
+      <div class="doc-badge-pill">${model.badge}</div>
+      <h2 class="doc-title">${model.headerTitle || model.title}</h2>
+      <p class="doc-subtitle">${model.descricao}</p>
+    </div>
+    ${dicasHtml}
+    <div class="doc-clauses-wrapper">
+      <div class="contract-preamble">${model.preambulo.replace(/\n/g, '<br>')}</div>
+      ${clausulasHtml}
+      <div class="contract-closing">${(model.fecho || '').replace(/\n/g, '<br>')}</div>
+    </div>
+  `;
+}
+
+function copyExemploContratoText() {
+  if (typeof CONTRATO_MODELOS === 'undefined') return;
+  const model = CONTRATO_MODELOS[currentExemploTab];
+  if (!model) return;
+
+  let plainText = `${model.headerTitle || model.title}\n\n`;
+  plainText += `${model.preambulo}\n\n`;
+
+  model.clausulas.forEach(c => {
+    plainText += `CLÁUSULA ${c.num}ª – ${c.titulo}\n${c.texto}\n\n`;
+  });
+
+  if (model.fecho) {
+    plainText += `${model.fecho}\n\n`;
+  }
+
+  const btnCopy = document.getElementById('btnCopyText');
+
+  const onCopiedSuccess = () => {
+    if (btnCopy) {
+      const orig = btnCopy.textContent;
+      btnCopy.textContent = '✓ Minuta Copiada!';
+      setTimeout(() => {
+        btnCopy.textContent = orig;
+      }, 2500);
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(plainText).then(onCopiedSuccess).catch(() => {
+      fallbackCopy(plainText);
+      onCopiedSuccess();
+    });
+  } else {
+    fallbackCopy(plainText);
+    onCopiedSuccess();
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+function applyCurrentExemploToForm() {
+  if (typeof CONTRATO_MODELOS === 'undefined') return;
+  const model = CONTRATO_MODELOS[currentExemploTab];
+  if (!model) return;
+
+  const items = document.querySelectorAll('#customOpcaoOptionsList .custom-dropdown-item');
+  items.forEach(item => {
+    const val = item.getAttribute('data-value') || item.textContent.trim();
+    if ((currentExemploTab === 'prestacao' && (val.includes('Prestação') || val.includes('Outros'))) ||
+        (currentExemploTab === 'terceirizada' && val.includes('terceirizada'))) {
+      selectOpcaoItem(item);
+    }
+  });
+
+  closeExemploContratoModal();
+}
 
 
 

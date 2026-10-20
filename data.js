@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    Simulador Lecom BPMS - Data Store & Default Mock Data (DESKTOP S.A.)
    ========================================================================== */
 
@@ -347,3 +347,129 @@ const INITIAL_BOTTLENECK_STATS = [
     recommendation: 'Criar scripts de provisioning automático de contas.'
   }
 ];
+
+
+/* ==========================================================================
+   MODELOS DE EXEMPLO DE CONTRATO (BASE DE CONSULTA PARA O REQUERENTE)
+   ========================================================================== */
+const CONTRATO_MODELOS = {
+  prestacao: {
+    title: 'Prestação de Serviços | Outros',
+    headerTitle: 'INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS TÉCNICOS E OUTRAS AVENÇAS',
+    tipoLabel: 'Prestação de Serviços Especializados / Corporativos',
+    badge: 'Prestação de Serviços',
+    descricao: 'Modelo padrão para contratação de empresas especializadas em serviços técnicos, operacionais, manutenção, consultorias e fornecimento contínuo de soluções.',
+    dicas: [
+      'Anexar a Proposta Comercial e o Termo de Referência (Escopo Detalhado) na tabela de anexos.',
+      'Certificar-se de que o CNPJ da Contratada está ativo e sem restrições na Receita Federal.',
+      'Valores mensais e totais no formulário devem corresponder exatamente aos valores da minuta anexa.',
+      'Caso haja negociação prévia pelo departamento de Compras, selecionar "Contrato/Aditivo negociado com Compras".'
+    ],
+    preambulo: 'Pelo presente instrumento particular, de um lado:\n\nCONTRATANTE: DESKTOP S.A. (ou coligada indicada na solicitação), inscrita no CNPJ sob o nº 04.206.050/0001-80, com sede corporativa devidamente qualificada no formulário do processo;\n\ne, de outro lado:\n\nCONTRATADA: [RAZÃO SOCIAL DA CONTRATADA], pessoa jurídica de direito privado inscrita no CNPJ sob o nº [CNPJ DA CONTRATADA], com sede em [Endereço completo da Contratada], neste ato representada por seus representantes legais;\n\nTêm entre si, justo e acordado, a celebração do presente Contrato de Prestação de Serviços, regido pelas cláusulas e condições seguintes:',
+    clausulas: [
+      {
+        num: '1',
+        titulo: 'DO OBJETO E ESCOPO DOS SERVIÇOS',
+        texto: '1.1. O presente Contrato tem por objeto a prestação, pela CONTRATADA à CONTRATANTE, de serviços técnicos e especializados conforme detalhamento, especificações, prazos de entrega e níveis de serviço (SLA) fixados na Proposta Comercial e Termo de Referência (Anexo I), parte integrante deste instrumento.\n1.2. Os serviços serão prestados com total autonomia técnica, zelo profissional e estrita observância das normas regulatórias e de segurança aplicáveis.'
+      },
+      {
+        num: '2',
+        titulo: 'DAS OBRIGAÇÕES E RESPONSABILIDADES DA CONTRATADA',
+        texto: '2.1. Executar o objeto contratual através de profissionais comprovadamente qualificados, habilitados e devidamente registrados.\n2.2. Cumprir pontualmente os prazos e cronogramas estipulados pela CONTRATANTE, comunicando formalmente qualquer eventualidade que possa ensejar atrasos.\n2.3. Manter a regularidade fiscal, jurídica e trabalhista perante os órgãos municipais, estaduais e federais durante todo o período de vigência contratual.\n2.4. Emitir Notas Fiscais com discriminação idêntica ao objeto faturado e em estrita conformidade com os relatórios de medição pré-aprovados.'
+      },
+      {
+        num: '3',
+        titulo: 'DAS OBRIGAÇÕES DA CONTRATANTE',
+        texto: '3.1. Disponibilizar os acessos físicos, lógicos e as informações imprescindíveis à tempestiva execução dos serviços.\n3.2. Proceder à conferência e aprovação dos relatórios de medição e entregas no prazo de até 5 (cinco) dias úteis do recebimento.\n3.3. Efetuar o pagamento dos valores acordados nas datas aprazadas, condicionadas ao aceite formal da Nota Fiscal de Serviços.'
+      },
+      {
+        num: '4',
+        titulo: 'DO PREÇO, FATURAMENTO E CONDIÇÕES DE PAGAMENTO',
+        texto: '4.1. Pela integral execução dos serviços, a CONTRATANTE pagará à CONTRATADA o valor mensal líquido estipulado na solicitação, perfazendo o montante total contratado.\n4.2. O pagamento ocorrerá em até 30 (trinta) dias após a emissão e validação formal da Nota Fiscal de Serviços pela área gestora do contrato da CONTRATANTE.\n4.3. Os valores serão reajustados anualmente, na data de aniversário do contrato, com base na variação percentual positiva do IPCA/IBGE (Índice de Preços ao Consumidor Amplo).'
+      },
+      {
+        num: '5',
+        titulo: 'DA VIGÊNCIA E RESCISÃO',
+        texto: '5.1. O presente instrumento vigorará pelo prazo determinado de 12 (doze) meses a contar de sua assinatura, podendo ser prorrogado mediante termo aditivo.\n5.2. Qualquer das partes poderá rescindir o contrato imotivadamente, mediante aviso prévio formal e por escrito com antecedência de 30 (trinta) dias, sem qualquer ônus, multas ou penalidades, quitando-se apenas os serviços efetivamente executados até a data da rescisão.\n5.3. O contrato poderá ser rescindido motivadamente de forma imediata por infração contratual, falência ou recuperação judicial de qualquer das partes.'
+      },
+      {
+        num: '6',
+        titulo: 'DAS PENALIDADES E MULTAS CONTRATUAIS',
+        texto: '6.1. O descumprimento injustificado de prazos ou níveis de serviço ensejará a aplicação de multa moratória de 0,5% (cinco décimos por cento) ao dia sobre o valor da parcela mensal correspondente, limitada a 10% do total mensal.\n6.2. Em caso de rescisão culposa motivada por inadimplemento, a parte culpada pagará à inocente multa compensatória no valor de 10% (dez por cento) sobre o saldo vincendo do contrato.'
+      },
+      {
+        num: '7',
+        titulo: 'DA CONFIDENCIALIDADE E PROTEÇÃO DE DADOS (LGPD)',
+        texto: '7.1. As partes obrigam-se a manter sob sigilo irrevogável todas as informações estratégicas, técnicas, operacionais e comerciais a que tiverem acesso.\n7.2. As partes comprometem-se a cumprir rigorosamente as determinações da Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD), garantindo a confidencialidade e segurança dos dados pessoais tratados.'
+      },
+      {
+        num: '8',
+        titulo: 'DO FORO DE ELEIÇÃO',
+        texto: '8.1. Fica eleito o Foro da Comarca da sede da CONTRATANTE para dirimir quaisquer controvérsias decorrentes deste contrato, renunciando a qualquer outro por mais privilegiado que seja.'
+      }
+    ],
+    fecho: 'E, por estarem assim justas e contratadas, as partes assinam o presente instrumento em vias de igual teor e forma para um só efeito.'
+  },
+  terceirizada: {
+    title: 'Mão de obra terceirizada',
+    headerTitle: 'INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS CONTÍNUOS COM DEDICAÇÃO DE MÃO DE OBRA (TERCEIRIZAÇÃO)',
+    tipoLabel: 'Prestação de Serviços com Cessão/Dedicação de Mão de Obra',
+    badge: 'Mão de Obra Terceirizada',
+    descricao: 'Modelo padrão obrigatório para contratação de postos de trabalho contínuos (atendimento, suporte técnico de campo, portaria, manutenção, facilities). Contém cláusulas indispensáveis de proteção subsidiária (Súmula 331 TST) e retenção preventiva.',
+    dicas: [
+      'OBRIGATÓRIO exigir da contratada o envio mensal de GFIP/FGTS, eSocial, DARF Previdenciário e CNDT antes de autorizar qualquer pagamento.',
+      'Definir com exatidão a quantidade de postos, jornada de trabalho e escalas no campo "Descrição do objeto".',
+      'Verificar se a Convenção Coletiva de Trabalho (CCT) da categoria está vigente.',
+      'Certificar-se de que os postos contam com EPIs e supervisão própria da empresa terceirizada, sem subordinação direta a gestores da Desktop.'
+    ],
+    preambulo: 'Pelo presente instrumento particular, de um lado:\n\nCONTRATANTE / TOMADORA: DESKTOP S.A., sociedade anônima inscrita no CNPJ sob o nº 04.206.050/0001-80, com sede corporativa qualificada na presente solicitação;\n\ne, de outro lado:\n\nCONTRATADA / PRESTADORA: [RAZÃO SOCIAL DA EMPRESA DE TERCEIRIZAÇÃO], inscrita no CNPJ sob o nº [CNPJ DA CONTRATADA], devidamente registrada perante os órgãos competentes, neste ato representada na forma de seus atos constitutivos;\n\nConsiderando que a contratação subordina-se à Lei nº 6.019/1974, alterada pela Lei nº 13.429/2017 e Reforma Trabalhista (Lei nº 13.467/2017), têm entre si justo e avençado o seguinte:',
+    clausulas: [
+      {
+        num: '1',
+        titulo: 'DO OBJETO E DEFINIÇÃO DOS POSTOS DE TRABALHO',
+        texto: '1.1. O objeto deste contrato consiste na prestação continuada de serviços operacionais/técnicos mediante a alocação de postos de trabalho dedicados conforme dimensionamento, funções e escalas aprovadas no Anexo de Especificação de Postos.\n1.2. A CONTRATADA exercerá com integral exclusividade a direção técnica, poder de comando, fiscalização de frequência e supervisão hierárquica e disciplinar de todos os seus colaboradores alocados.'
+      },
+      {
+        num: '2',
+        titulo: 'DA INEXISTÊNCIA DE VÍNCULO EMPREGATÍCIO COM A TOMADORA',
+        texto: '2.1. Inexiste e jamais se configurará qualquer vínculo de natureza trabalhista, previdenciária ou empregatícia entre a CONTRATANTE e os empregados ou prestadores da CONTRATADA.\n2.2. A CONTRATADA é a única responsável pelo processo seletivo, contratação formal em CTPS, pagamento pontual de salários, adicionais de insalubridade/periculosidade, férias remuneradas, 13º salário, vale-transporte e vale-alimentação.'
+      },
+      {
+        num: '3',
+        titulo: 'DA COMPROVAÇÃO MENSAL DE REGULARIDADE TRABALHISTA E PREVIDENCIÁRIA',
+        texto: '3.1. Como condição OBRIGATÓRIA E INDISPENSÁVEL para a liquidação de qualquer fatura ou Nota Fiscal, a CONTRATADA apresentará à CONTRATANTE até o 10º (décimo) dia de cada mês os seguintes documentos do mês anterior:\n   a) Guia de Recolhimento de FGTS (SEFIP/FGTS Digital) quitada com a respectiva Relação de Empregados (RE);\n   b) Comprovante de arrecadação do DARF Previdenciário/eSocial;\n   c) Folha de pagamento assinada ou comprovantes bancários de crédito salarial e benefícios;\n   d) Certidão Negativa de Débitos Trabalhistas (CNDT) válida;\n   e) Certidão Negativa Conjunta da Receita Federal e PGFN;\n   f) Fichas de fornecimento de Equipamentos de Proteção Individual (EPIs).\n3.2. A não apresentação de qualquer dos documentos autoriza a retenção cautelar do pagamento da fatura, sem incidência de juros ou multas contra a CONTRATANTE.'
+      },
+      {
+        num: '4',
+        titulo: 'DO DIREITO DE RETENÇÃO E SALVAGUARDA SUBSIDIÁRIA (SÚMULA 331 DO TST)',
+        texto: '4.1. Na hipótese de ajuizamento de reclamatória trabalhista ou autuação fiscal envolvendo trabalhador que prestou serviços nas dependências da CONTRATANTE, esta fica autorizada a reter preventivamente valores faturados pela CONTRATADA para garantia de contingência judicial.\n4.2. A CONTRATADA obriga-se a requerer a imediata exclusão da CONTRATANTE da lide e ressarcirá integralmente quaisquer despesas com depósitos recursais, perícias ou condenações judiciais.'
+      },
+      {
+        num: '5',
+        titulo: 'DA SAÚDE, SEGURANÇA DO TRABALHO, EPIs E UNIFORMES',
+        texto: '5.1. A CONTRATADA fornecerá sem qualquer custo uniforme completo, crachá de identificação e todos os Equipamentos de Proteção Individual (EPIs) adequados às Normas Regulamentadoras (NRs).\n5.2. A CONTRATADA manterá atualizados perante a CONTRATANTE os laudos do PGR (Programa de Gerenciamento de Riscos) e PCMSO (Programa de Controle Médico de Saúde Ocupacional).'
+      },
+      {
+        num: '6',
+        titulo: 'DA SUBSTITUIÇÃO IMEDIATA DE PROFISSIONAIS',
+        texto: '6.1. A CONTRATANTE poderá solicitar justificadamente a substituição de qualquer profissional alocado por desídia, descumprimento de normas éticas ou insuficiência técnica.\n6.2. A CONTRATADA efetuará a substituição no prazo máximo e improrrogável de até 24 (vinte e quatro) horas, sem custos extras e sem prejuízo à continuidade das rotinas operacionais.'
+      },
+      {
+        num: '7',
+        titulo: 'DO PREÇO, REMUNERAÇÃO E REPACTUAÇÃO COLETIVA',
+        texto: '7.1. Pelos serviços dos postos alocados, a CONTRATANTE pagará o valor mensal pactuado na solicitação, com vencimento em até 30 (trinta) dias após aceite da fatura e comprovação das certidões trabalhistas.\n7.2. A repactuação em razão de Dissídio ou Convenção Coletiva de Trabalho (CCT) somente será analisada mediante comprovação formal da homologação pelo Ministério do Trabalho e cálculo analítico da variação de custos.'
+      },
+      {
+        num: '8',
+        titulo: 'DO COMPLIANCE, LEI ANTICORRUPÇÃO E LGPD',
+        texto: '8.1. A CONTRATADA compromete-se a respeitar as diretrizes da Lei nº 12.846/2013 (Lei Anticorrupção), garantindo a estrita observância de normas éticas e de conformidade legal.\n8.2. As partes declaram total adequação aos princípios e regras estabelecidos pela Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD).'
+      },
+      {
+        num: '9',
+        titulo: 'DO FORO DE ELEIÇÃO',
+        texto: '9.1. Fica eleito o Foro da Comarca da sede da CONTRATANTE como competente para solucionar quaisquer litígios oriundos deste Contrato.'
+      }
+    ],
+    fecho: 'E, por estarem justas e acordadas, as partes assinam o presente contrato em 2 (duas) vias de igual teor perante duas testemunhas instrumentárias.'
+  }
+};
